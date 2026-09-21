@@ -1,0 +1,1285 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script>
+      if (window.location.protocol === "file:") {
+        const localUrl = new URL("http://127.0.0.1:4173/");
+        localUrl.hash = window.location.hash || "#inicio";
+        window.location.replace(localUrl.href);
+      }
+    </script>
+    <meta
+      name="description"
+      content="FORTICEM — Química aplicada a la construcción."
+    />
+    <meta name="theme-color" content="#04142F" />
+    <title>FORTICEM | Química aplicada a la construcción</title>
+    <link rel="icon" type="image/svg+xml" href="assets/brand/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="preload"
+      href="assets/images/products/separadores-concreto-studio-v2.avif"
+      as="image"
+      type="image/avif"
+      fetchpriority="high"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css?v=20260921-brand1" />
+    <script type="module" src="assets/vendor/model-viewer.min.js"></script>
+    <script type="module" src="app.js?v=20260921-1"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#inicio">Saltar al contenido</a>
+
+    <header class="site-header" data-header>
+      <div class="site-header__inner container">
+        <a class="brand" href="#inicio" aria-label="FORTICEM, ir al inicio">
+          <img class="brand__symbol" src="assets/brand/forticem-symbol-light.svg" width="36" height="42" alt="" />
+          <span class="brand__wordmark"><span class="brand__name">FORTICEM</span><span class="brand__descriptor">Química aplicada a la construcción</span></span>
+        </a>
+
+        <nav class="desktop-nav" aria-label="Navegación principal">
+          <a class="nav-link is-active" href="#inicio" aria-current="page">Inicio</a>
+
+          <div class="nav-dropdown" data-mega-root>
+            <button
+              class="nav-link nav-link--button"
+              type="button"
+              aria-expanded="false"
+              aria-controls="products-mega-menu"
+              data-mega-trigger
+            >
+              Productos
+              <svg class="nav-link__chevron" aria-hidden="true" viewBox="0 0 12 8">
+                <path d="m1 1.5 5 5 5-5" />
+              </svg>
+            </button>
+
+            <div
+              class="mega-menu"
+              id="products-mega-menu"
+              aria-label="Categorías de productos"
+              data-mega-menu
+              hidden
+            >
+              <div class="mega-menu__inner container">
+                <div class="mega-menu__intro">
+                  <span class="eyebrow"><i aria-hidden="true"></i> Catálogo técnico</span>
+                  <p class="mega-menu__title">Soluciones fabricadas para las exigencias reales de obra.</p>
+                  <a class="technical-link" href="#productos">
+                    Ver todos los productos
+                    <span aria-hidden="true">→</span>
+                  </a>
+                </div>
+
+                <div class="mega-menu__categories" data-product-categories></div>
+
+                <aside class="mega-menu__aside" aria-label="Asistencia comercial">
+                  <span class="mega-menu__aside-label">¿No sabe cuál necesita?</span>
+                  <p>Encuentre una solución según la aplicación o el problema en obra.</p>
+                  <a class="technical-link technical-link--light" href="#soluciones">
+                    Explorar soluciones
+                    <span aria-hidden="true">→</span>
+                  </a>
+                </aside>
+              </div>
+            </div>
+          </div>
+
+          <a class="nav-link" href="#soluciones">Soluciones</a>
+          <a class="nav-link" href="#confianza-operativa">Nosotros</a>
+          <a class="nav-link" href="#entregas">Proyectos / Entregas</a>
+          <a class="nav-link" href="#block-michi-tecnico">Recursos</a>
+          <a class="nav-link" href="#cotizacion">Contacto</a>
+        </nav>
+
+        <a class="quote-cta quote-cta--desktop" href="#cotizacion">
+          Solicitar cotización
+          <span class="quote-cta__arrow" aria-hidden="true">↗</span>
+        </a>
+
+        <button
+          class="menu-toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="mobile-navigation"
+          aria-label="Abrir menú"
+          data-menu-toggle
+        >
+          <span class="menu-toggle__label">Menú</span>
+          <span class="menu-toggle__icon" aria-hidden="true">
+            <i></i>
+            <i></i>
+          </span>
+        </button>
+      </div>
+    </header>
+
+    <div class="mobile-nav" id="mobile-navigation" data-mobile-nav hidden>
+      <div class="mobile-nav__backdrop" data-menu-close></div>
+      <nav class="mobile-nav__panel" aria-label="Navegación móvil" tabindex="-1">
+        <div class="mobile-nav__top">
+          <span class="mobile-nav__section-label">Navegación</span>
+          <button class="mobile-nav__close" type="button" aria-label="Cerrar menú" data-menu-close>
+            <span aria-hidden="true"></span>
+          </button>
+        </div>
+
+        <div class="mobile-nav__links" data-mobile-links></div>
+
+        <div class="mobile-nav__footer">
+          <a class="quote-cta quote-cta--mobile" href="#cotizacion">
+            Solicitar cotización
+            <span class="quote-cta__arrow" aria-hidden="true">↗</span>
+          </a>
+          <p>Prefabricados, aditivos y soluciones técnicas para construcción.</p>
+        </div>
+      </nav>
+    </div>
+
+    <main id="inicio" tabindex="-1">
+      <section class="hero" aria-labelledby="hero-title" data-hero>
+        <div class="hero__blueprint" aria-hidden="true"></div>
+
+        <div class="hero__inner container">
+          <div class="hero__content">
+            <span class="hero__eyebrow">
+              <i aria-hidden="true"></i>
+              Química aplicada a la construcción
+            </span>
+
+            <h1 id="hero-title">
+              Ingeniería que<br />
+              <span>toma forma.</span>
+            </h1>
+
+            <p class="hero__lead">
+              Prefabricados de concreto, aditivos químicos y soluciones técnicas desarrolladas
+              para responder a las exigencias reales de obra.
+            </p>
+
+            <div class="hero__actions" aria-label="Acciones principales">
+              <a class="hero__primary" href="#productos">
+                Explorar productos
+                <span aria-hidden="true">↗</span>
+              </a>
+              <a class="hero__secondary" href="#cotizacion">
+                Solicitar cotización
+                <span aria-hidden="true">→</span>
+              </a>
+            </div>
+
+            <dl class="hero__proof" aria-label="Capacidades destacadas">
+              <div>
+                <dt>Fabricación</dt>
+                <dd>Prefabricados y aditivos</dd>
+              </div>
+              <div>
+                <dt>02 plantas</dt>
+                <dd>Ventanilla y Pachacútec</dd>
+              </div>
+              <div>
+                <dt>Entrega</dt>
+                <dd>Coordinación directa a obra</dd>
+              </div>
+            </dl>
+          </div>
+
+          <div class="hero__visual" data-hero-stage data-product-carousel>
+            <div class="hero__orbit" aria-hidden="true">
+              <span class="hero__orbit-line hero__orbit-line--one"></span>
+              <span class="hero__orbit-line hero__orbit-line--two"></span>
+              <i class="hero__orbit-node hero__orbit-node--one"></i>
+              <i class="hero__orbit-node hero__orbit-node--two"></i>
+              <i class="hero__orbit-node hero__orbit-node--three"></i>
+            </div>
+
+            <div class="hero-carousel" aria-roledescription="carrusel" aria-label="Productos FORTICEM">
+              <div class="hero-carousel__viewport" aria-live="polite">
+                <article class="hero-slide hero-slide--model is-active" data-product-slide aria-hidden="false">
+                  <model-viewer
+                    class="hero-slide__model"
+                    src="assets/models/separadores-concreto-v1.glb"
+                    poster="assets/images/products/separadores-concreto-studio-v2.webp"
+                    alt="Modelo 3D interactivo de separadores de concreto FORTICEM de 2,5, 4 y 7 cm"
+                    camera-controls
+                    auto-rotate
+                    auto-rotate-delay="0"
+                    rotation-per-second="9deg"
+                    camera-orbit="36deg 66deg 126%"
+                    min-camera-orbit="auto 45deg 82%"
+                    max-camera-orbit="auto 80deg 150%"
+                    shadow-intensity="1.15"
+                    shadow-softness="0.86"
+                    environment-image="neutral"
+                    exposure="0.96"
+                    interaction-prompt="none"
+                    loading="eager"
+                    reveal="auto"
+                  ></model-viewer>
+                  <div class="hero-slide__caption"><span>Prefabricados / 01</span><strong>Separadores de concreto</strong><small>Recubrimientos de 2 a 10 cm</small></div>
+                </article>
+
+                <article class="hero-slide hero-slide--model" data-product-slide aria-hidden="true">
+                  <model-viewer
+                    class="hero-slide__model"
+                    src="assets/models/aditivos-forticem-familia-v1.glb"
+                    poster="assets/images/products/aditivos-forticem-familia-studio-v1.webp"
+                    alt="Modelos 3D interactivos de FORTICEM FLOW, CURE y RELEASE en presentaciones de 200, 20 y 4 litros"
+                    camera-controls
+                    auto-rotate
+                    auto-rotate-delay="0"
+                    rotation-per-second="6deg"
+                    camera-orbit="32deg 67deg 100%"
+                    min-camera-orbit="auto 46deg 88%"
+                    max-camera-orbit="auto 82deg 160%"
+                    shadow-intensity="1.1"
+                    shadow-softness="0.9"
+                    environment-image="neutral"
+                    exposure="1.02"
+                    interaction-prompt="none"
+                    loading="eager"
+                    reveal="auto"
+                  ></model-viewer>
+                  <div class="hero-slide__caption"><span>Química / 02</span><strong>Aditivos FORTICEM</strong><small>FLOW · CURE · RELEASE</small></div>
+                </article>
+
+                <article class="hero-slide hero-slide--model" data-product-slide aria-hidden="true">
+                  <model-viewer
+                    class="hero-slide__model"
+                    src="assets/models/block-michi-v1.glb"
+                    poster="assets/images/products/block-michi-3d-cutout-v1.webp"
+                    alt="Modelo 3D interactivo del Block Grass tipo Michi FORTICEM"
+                    camera-controls
+                    auto-rotate
+                    auto-rotate-delay="0"
+                    rotation-per-second="10deg"
+                    camera-orbit="38deg 64deg 118%"
+                    min-camera-orbit="auto 45deg 88%"
+                    max-camera-orbit="auto 78deg 155%"
+                    shadow-intensity="1.15"
+                    shadow-softness="0.85"
+                    environment-image="neutral"
+                    exposure="0.88"
+                    interaction-prompt="none"
+                    loading="eager"
+                    reveal="auto"
+                  ></model-viewer>
+                  <div class="hero-slide__caption"><span>Block Grass / 03</span><strong>Block Grass tipo Michi</strong><small>35 MPa · 35 × 35 × 9 cm</small></div>
+                </article>
+
+                <article class="hero-slide hero-slide--model" data-product-slide aria-hidden="true">
+                  <model-viewer
+                    class="hero-slide__model"
+                    src="assets/models/block-grass-tipo-8-v1.glb?v=2"
+                    poster="assets/images/products/block-grass-tipo-8-reference.png"
+                    alt="Modelo 3D interactivo del Block Grass tipo 8 FORTICEM con dos aberturas romboidales"
+                    camera-controls
+                    auto-rotate
+                    auto-rotate-delay="0"
+                    rotation-per-second="5deg"
+                    camera-orbit="0deg 15deg 135%"
+                    min-camera-orbit="auto 15deg 80%"
+                    max-camera-orbit="auto 82deg 155%"
+                    shadow-intensity="1.1"
+                    shadow-softness="0.88"
+                    environment-image="neutral"
+                    exposure="0.9"
+                    interaction-prompt="none"
+                    loading="eager"
+                    reveal="auto"
+                  ></model-viewer>
+                  <div class="hero-slide__caption"><span>Block Grass / 04</span><strong>Block Grass tipo 8</strong><small>22 × 41 × 9 cm</small></div>
+                </article>
+
+                <article class="hero-slide hero-slide--model" data-product-slide aria-hidden="true">
+                  <model-viewer
+                    class="hero-slide__model"
+                    src="assets/models/king-block-familia-v1.glb"
+                    poster="assets/images/products/king-block-familia-studio-v1.webp"
+                    alt="Modelos 3D interactivos de la familia King Block FORTICEM P9, P12 y P13"
+                    camera-controls
+                    auto-rotate
+                    auto-rotate-delay="0"
+                    rotation-per-second="7deg"
+                    camera-orbit="35deg 66deg 118%"
+                    min-camera-orbit="auto 45deg 82%"
+                    max-camera-orbit="auto 82deg 155%"
+                    shadow-intensity="1.15"
+                    shadow-softness="0.88"
+                    environment-image="neutral"
+                    exposure="0.96"
+                    interaction-prompt="none"
+                    loading="eager"
+                    reveal="auto"
+                  ></model-viewer>
+                  <div class="hero-slide__caption"><span>Bloques / 05</span><strong>King Block</strong><small>Variantes P9 · P12 · P13</small></div>
+                </article>
+
+                <article class="hero-slide hero-slide--model" data-product-slide aria-hidden="true">
+                  <model-viewer
+                    class="hero-slide__model"
+                    src="assets/models/escantillon-concreto-v1.glb"
+                    poster="assets/images/products/escantillones-studio-v2.webp"
+                    alt="Modelos 3D interactivos de escantillones de concreto FORTICEM de 20, 25 y 30 cm"
+                    camera-controls
+                    auto-rotate
+                    auto-rotate-delay="0"
+                    rotation-per-second="7deg"
+                    camera-orbit="32deg 69deg 115%"
+                    min-camera-orbit="auto 45deg 82%"
+                    max-camera-orbit="auto 82deg 155%"
+                    shadow-intensity="1.2"
+                    shadow-softness="0.9"
+                    environment-image="neutral"
+                    exposure="1.02"
+                    interaction-prompt="none"
+                    loading="eager"
+                    reveal="auto"
+                  ></model-viewer>
+                  <div class="hero-slide__caption"><span>Obra / 06</span><strong>Escantillones</strong><small>Largos 20 · 25 · 30 cm</small></div>
+                </article>
+
+                <article class="hero-slide hero-slide--model" data-product-slide aria-hidden="true">
+                  <model-viewer
+                    class="hero-slide__model"
+                    src="assets/models/adoquines-familia-v1.glb"
+                    poster="assets/images/products/adoquines-colores-studio-v1.webp"
+                    alt="Modelo 3D interactivo de adoquines FORTICEM en rojo, gris y negro"
+                    camera-controls
+                    auto-rotate
+                    auto-rotate-delay="0"
+                    rotation-per-second="8deg"
+                    camera-orbit="36deg 66deg 110%"
+                    min-camera-orbit="auto 45deg 82%"
+                    max-camera-orbit="auto 80deg 145%"
+                    shadow-intensity="1.1"
+                    shadow-softness="0.88"
+                    environment-image="neutral"
+                    exposure="1.05"
+                    interaction-prompt="none"
+                    loading="eager"
+                    reveal="auto"
+                  ></model-viewer>
+                  <div class="hero-slide__caption"><span>Pavimentos / 07</span><strong>Adoquines</strong><small>Acabados rojo · gris · negro</small></div>
+                </article>
+              </div>
+
+              <div class="hero-carousel__controls">
+                <button type="button" data-carousel-prev aria-label="Mostrar producto anterior">←</button>
+                <span><b data-carousel-current>01</b> / 07</span>
+                <button type="button" data-carousel-next aria-label="Mostrar producto siguiente">→</button>
+              </div>
+
+              <div class="hero-carousel__progress" aria-hidden="true"><span data-carousel-progress></span></div>
+            </div>
+          </div>
+        </div>
+
+        <nav class="hero__product-rail container" aria-label="Productos químicos destacados">
+          <span class="hero__rail-label">Línea de aditivos</span>
+          <a href="aditivos/flow/index.html">FLOW <small>Trabajabilidad</small></a>
+          <a href="aditivos/flow-plus/index.html">FLOW+ <small>Alto desempeño</small></a>
+          <a href="aditivos/cure/index.html">CURE <small>Curado</small></a>
+          <a href="aditivos/release/index.html">RELEASE <small>Desmolde</small></a>
+          <a href="aditivos/seal/index.html">SEAL <small>Protección</small></a>
+        </nav>
+      </section>
+
+      <section class="brand-worlds" id="soluciones" aria-labelledby="worlds-title" data-worlds>
+        <div class="brand-worlds__transition" aria-hidden="true">
+          <span></span>
+        </div>
+
+        <div class="brand-worlds__inner container">
+          <header class="brand-worlds__header reveal" data-reveal>
+            <div class="brand-worlds__heading">
+              <span class="section-label">
+                <i aria-hidden="true"></i>
+                Nuestras soluciones
+              </span>
+              <h2 id="worlds-title">Dos mundos.<br />Una marca.</h2>
+            </div>
+            <p>
+              Soluciones en concreto y química desarrolladas para responder a diferentes
+              necesidades dentro de una misma obra.
+            </p>
+          </header>
+
+          <div class="worlds-stage">
+            <article
+              class="world-panel world-panel--precast reveal"
+              id="prefabricados"
+              data-reveal
+              data-world-panel
+            >
+              <div class="world-panel__content">
+                <div class="world-panel__meta">
+                  <span>01</span>
+                  <span>Concreto / Elemento físico</span>
+                </div>
+
+                <div class="world-panel__copy">
+                  <h3>Prefabricados</h3>
+                  <p>
+                    Elementos de concreto diseñados para responder a exigencias reales de obra,
+                    con medidas, resistencia y aplicaciones definidas.
+                  </p>
+                  <a class="world-link" href="#productos">
+                    <span>Explorar prefabricados</span>
+                    <svg aria-hidden="true" viewBox="0 0 24 24">
+                      <path d="M5 12h13M13 7l5 5-5 5" />
+                    </svg>
+                  </a>
+                </div>
+              </div>
+
+              <figure class="world-visual world-visual--precast" aria-labelledby="precast-visual-title">
+                <picture class="world-visual__picture">
+                  <source type="image/avif" srcset="assets/images/products/block-michi-studio-v3.avif" />
+                  <source type="image/webp" srcset="assets/images/products/block-michi-studio-v3.webp" />
+                  <img
+                    src="assets/images/products/block-michi-studio-v3.png"
+                    width="1080"
+                    height="1080"
+                    loading="lazy"
+                    decoding="async"
+                    alt="Block Grass tipo Michi FORTICEM en fotografía de estudio"
+                  />
+                </picture>
+                <div class="technical-frame" aria-hidden="true">
+                  <span class="technical-frame__corner technical-frame__corner--tl"></span>
+                  <span class="technical-frame__corner technical-frame__corner--br"></span>
+                  <span class="technical-frame__axis technical-frame__axis--x"></span>
+                  <span class="technical-frame__axis technical-frame__axis--y"></span>
+                </div>
+                <figcaption class="world-visual__caption" id="precast-visual-title">
+                  <span>Producto real seleccionado</span>
+                  <strong>Block Grass tipo Michi</strong>
+                  <small>Fotografía de estudio del producto</small>
+                </figcaption>
+              </figure>
+            </article>
+
+            <div class="worlds-connector" aria-hidden="true">
+              <span class="worlds-connector__line worlds-connector__line--left"></span>
+              <span class="worlds-connector__node">F</span>
+              <span class="worlds-connector__line worlds-connector__line--right"></span>
+            </div>
+
+            <article
+              class="world-panel world-panel--additives reveal"
+              id="aditivos"
+              data-reveal
+              data-world-panel
+            >
+              <div class="world-panel__content">
+                <div class="world-panel__meta">
+                  <span>02</span>
+                  <span>Química / Control de desempeño</span>
+                </div>
+
+                <div class="world-panel__copy">
+                  <h3>Aditivos</h3>
+                  <p>
+                    Soluciones químicas para modificar, proteger y optimizar el comportamiento
+                    del concreto según las necesidades de obra.
+                  </p>
+                  <a class="world-link world-link--light" href="#productos">
+                    <span>Explorar aditivos</span>
+                    <svg aria-hidden="true" viewBox="0 0 24 24">
+                      <path d="M5 12h13M13 7l5 5-5 5" />
+                    </svg>
+                  </a>
+                </div>
+              </div>
+
+              <figure class="world-visual world-visual--additives" aria-labelledby="additive-visual-title">
+                <picture class="world-visual__picture">
+                  <source
+                    type="image/avif"
+                    srcset="assets/images/products/aditivos-forticem-familia-studio-v1.avif"
+                  />
+                  <source
+                    type="image/webp"
+                    srcset="assets/images/products/aditivos-forticem-familia-studio-v1.webp"
+                  />
+                  <img
+                    src="assets/images/products/aditivos-forticem-familia-studio-v1.png"
+                    width="1080"
+                    height="1080"
+                    loading="lazy"
+                    decoding="async"
+                    alt="Familia de aditivos FORTICEM en presentaciones de 4, 20 y 200 litros"
+                  />
+                </picture>
+                <div class="chemical-grid" aria-hidden="true">
+                  <span class="chemical-grid__line chemical-grid__line--one"></span>
+                  <span class="chemical-grid__line chemical-grid__line--two"></span>
+                  <i class="chemical-grid__node chemical-grid__node--one"></i>
+                  <i class="chemical-grid__node chemical-grid__node--two"></i>
+                  <i class="chemical-grid__node chemical-grid__node--three"></i>
+                </div>
+                <figcaption class="world-visual__caption" id="additive-visual-title">
+                  <span>Producto real seleccionado</span>
+                  <strong>Familia de aditivos FORTICEM</strong>
+                  <small>Presentaciones de 4 L, 20 L y 200 L</small>
+                </figcaption>
+              </figure>
+            </article>
+          </div>
+
+          <div class="brand-worlds__outro" aria-hidden="true">
+            <span></span>
+            <i></i>
+            <span></span>
+          </div>
+        </div>
+      </section>
+
+      <section
+        class="featured-products"
+        id="productos"
+        aria-labelledby="featured-products-title"
+        data-featured-products
+      >
+        <div class="featured-products__inner container">
+          <header class="featured-products__header" data-featured-intro>
+            <div>
+              <span class="section-label">
+                <i aria-hidden="true"></i>
+                Productos destacados
+              </span>
+              <h2 id="featured-products-title">Productos para<br />construir mejor.</h2>
+            </div>
+            <p>
+              Prefabricados, aditivos y soluciones técnicas desarrolladas para diferentes
+              necesidades de construcción.
+            </p>
+          </header>
+
+          <div class="featured-products__mosaic" data-featured-grid></div>
+
+          <div class="featured-products__handoff" aria-hidden="true">
+            <span class="featured-products__handoff-line"></span>
+            <p>Conoce cómo está construido.</p>
+            <i></i>
+          </div>
+        </div>
+      </section>
+
+      <section
+        class="technical-story"
+        id="block-michi-tecnico"
+        aria-labelledby="technical-story-title"
+        data-technical-story
+      >
+        <div class="technical-story__intro container">
+          <span class="section-label section-label--dark">
+            <i aria-hidden="true"></i>
+            Ingeniería en cada pieza
+          </span>
+          <div class="technical-story__intro-grid">
+            <h2 id="technical-story-title">Resistencia<br />que puedes medir.</h2>
+            <p>
+              Conoce las dimensiones, resistencia y características del Block Grass tipo Michi
+              FORTICEM.
+            </p>
+          </div>
+        </div>
+
+        <div class="technical-story__experience container">
+          <div class="technical-story__steps">
+            <article class="story-step is-active" data-story-step="identity">
+              <span class="story-step__index">01 / Identificación</span>
+              <p class="story-step__category">Prefabricado de concreto</p>
+              <h3>Block Grass<br />tipo Michi</h3>
+              <p class="story-step__description">
+                Una pieza FORTICEM con información técnica definida y disponible para cotización.
+              </p>
+            </article>
+
+            <article class="story-step" data-story-step="resistance">
+              <span class="story-step__index">02 / Resistencia</span>
+              <div class="story-step__primary-metric">
+                <strong>35</strong>
+                <span>MPa</span>
+              </div>
+              <p class="story-step__metric-label">Resistencia</p>
+              <p class="story-step__description">
+                El dato técnico ocupa el lugar del adjetivo: 35 MPa.
+              </p>
+            </article>
+
+            <article class="story-step" data-story-step="dimensions">
+              <span class="story-step__index">03 / Dimensiones</span>
+              <h3>Geometría<br />definida.</h3>
+              <dl class="story-step__spec-list">
+                <div>
+                  <dt>Largo</dt>
+                  <dd>35 cm</dd>
+                </div>
+                <div>
+                  <dt>Ancho</dt>
+                  <dd>35 cm</dd>
+                </div>
+                <div>
+                  <dt>Altura</dt>
+                  <dd>9 cm</dd>
+                </div>
+              </dl>
+            </article>
+
+            <article class="story-step" data-story-step="weight">
+              <span class="story-step__index">04 / Peso</span>
+              <h3>15–15.2 <small>kg</small></h3>
+              <p class="story-step__metric-label">Peso aproximado</p>
+              <p class="story-step__description">
+                Información esencial para comprender y planificar la manipulación de la pieza.
+              </p>
+            </article>
+          </div>
+
+          <div class="technical-story__stage-wrap">
+            <figure class="technical-stage" data-technical-stage data-active="identity">
+              <div class="technical-stage__grid" aria-hidden="true"></div>
+              <div class="technical-stage__status">
+                <span>Producto técnico / 01</span>
+                <span>FORTICEM</span>
+              </div>
+
+              <div class="technical-stage__product">
+                <span class="technical-stage__corner technical-stage__corner--tl"></span>
+                <span class="technical-stage__corner technical-stage__corner--tr"></span>
+                <span class="technical-stage__corner technical-stage__corner--bl"></span>
+                <span class="technical-stage__corner technical-stage__corner--br"></span>
+                <picture class="technical-stage__picture">
+                  <source type="image/avif" srcset="assets/images/products/block-michi-render-v2.avif" />
+                  <source type="image/webp" srcset="assets/images/products/block-michi-render-v2.webp" />
+                  <img
+                    src="assets/images/products/block-michi-render-v2.png"
+                    width="1080"
+                    height="1080"
+                    loading="lazy"
+                    decoding="async"
+                    alt="Block Grass tipo Michi FORTICEM visto en perspectiva isométrica"
+                  />
+                </picture>
+              </div>
+
+              <div class="technical-stage__annotation technical-stage__annotation--resistance" aria-hidden="true">
+                <span class="technical-stage__node"></span>
+                <span class="technical-stage__line"></span>
+                <div><strong>35</strong><span>MPa</span><small>Resistencia</small></div>
+              </div>
+
+              <div class="dimension-overlay" aria-hidden="true">
+                <div class="dimension dimension--width">
+                  <i></i><span>35 cm</span><i></i>
+                </div>
+                <div class="dimension dimension--height">
+                  <i></i><span>35 cm</span><i></i>
+                </div>
+                <div class="dimension dimension--depth">
+                  <i></i><span>9 cm</span><i></i>
+                </div>
+              </div>
+
+              <div class="technical-stage__annotation technical-stage__annotation--weight" aria-hidden="true">
+                <span class="technical-stage__node"></span>
+                <span class="technical-stage__line"></span>
+                <div><strong>15–15.2 kg</strong><small>Peso aproximado</small></div>
+              </div>
+
+              <figcaption>
+                Render del Block Grass tipo Michi acompañado de sus especificaciones técnicas.
+              </figcaption>
+            </figure>
+          </div>
+        </div>
+
+        <div class="technical-story__summary container">
+          <div class="technical-story__summary-copy">
+            <span class="section-label section-label--dark">
+              <i aria-hidden="true"></i>
+              Block Grass tipo Michi
+            </span>
+            <h3>Del dato<br />a la obra.</h3>
+            <p>
+              Solicita una cotización indicando la cantidad y ubicación de entrega. El producto se
+              incluirá automáticamente en el mensaje.
+            </p>
+          </div>
+
+          <dl class="technical-story__summary-specs" aria-label="Resumen técnico del Block Michi">
+            <div>
+              <dt>Resistencia</dt>
+              <dd>35 MPa</dd>
+            </div>
+            <div>
+              <dt>Dimensiones</dt>
+              <dd>35 × 35 × 9 cm</dd>
+            </div>
+            <div>
+              <dt>Peso aproximado</dt>
+              <dd>15–15.2 kg</dd>
+            </div>
+          </dl>
+
+          <a
+            class="technical-story__cta"
+            href="https://wa.me/51926793050?text=Hola%20FORTICEM%2C%20quiero%20solicitar%20una%20cotizaci%C3%B3n.%0AProducto%3A%20Block%20Grass%20tipo%20Michi%20FORTICEM"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Cotizar Block Michi
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path d="M5 12h13M13 7l5 5-5 5" />
+            </svg>
+          </a>
+        </div>
+
+        <div class="technical-story__exit" aria-hidden="true"></div>
+      </section>
+
+      <section
+        class="operational-trust"
+        id="confianza-operativa"
+        aria-labelledby="operational-trust-title"
+        data-operational-trust
+      >
+        <div class="operational-trust__inner container">
+          <header class="operational-trust__header" data-operational-reveal>
+            <div>
+              <span class="section-label">
+                <i aria-hidden="true"></i>
+                Nuestra forma de trabajar
+              </span>
+              <h2 id="operational-trust-title">
+                Detrás de cada producto<br />hay una operación real.
+              </h2>
+            </div>
+            <p>
+              Fabricación, stock, atención y entregas forman parte de una operación pensada para
+              responder a las necesidades reales de cada proyecto.
+            </p>
+          </header>
+
+          <div class="operational-trust__lead" data-operational-reveal>
+            <figure class="operational-photo operational-photo--lead">
+              <div
+                class="operational-photo__placeholder"
+                role="img"
+                aria-label="Espacio reservado para una fotografía real de fabricación FORTICEM"
+              >
+                <span>Registro operativo / 01</span>
+                <strong>Fotografía real de producción pendiente</strong>
+                <small>No se utiliza imagen de stock</small>
+              </div>
+              <figcaption>
+                <span>Fabricación FORTICEM</span>
+                <span>Registro documental pendiente</span>
+              </figcaption>
+            </figure>
+
+            <article class="operational-trust__manufacturing">
+              <span class="evidence-index">01 / Fabricación</span>
+              <h3>Producto que parte de una operación.</h3>
+              <p>
+                Fabricamos y abastecemos productos destinados a diferentes necesidades de obra.
+              </p>
+
+              <ol class="operation-chain" aria-label="Flujo operativo FORTICEM">
+                <li><span>01</span><strong>Fabricación</strong></li>
+                <li><span>02</span><strong>Disponibilidad</strong></li>
+                <li><span>03</span><strong>Coordinación</strong></li>
+                <li><span>04</span><strong>Despacho</strong></li>
+              </ol>
+            </article>
+          </div>
+
+          <div class="operational-trust__evidence-grid">
+            <article class="quality-evidence" data-operational-reveal>
+              <div>
+                <span class="evidence-index">02 / Calidad medible</span>
+                <p>
+                  Trabajamos con especificaciones y datos técnicos que permiten evaluar cada
+                  producto más allá de una promesa comercial.
+                </p>
+              </div>
+              <div class="quality-evidence__metric">
+                <strong>35</strong>
+                <span>MPa</span>
+                <small>Block Grass tipo Michi</small>
+              </div>
+            </article>
+
+            <article class="documentary-evidence documentary-evidence--stock" data-operational-reveal>
+              <div
+                class="documentary-evidence__media"
+                role="img"
+                aria-label="Espacio reservado para una fotografía real de stock FORTICEM"
+              >
+                <span>Fotografía de almacén pendiente</span>
+              </div>
+              <div class="documentary-evidence__copy">
+                <span class="evidence-index">03 / Stock</span>
+                <h3>Disponibilidad para responder.</h3>
+                <p>
+                  Disponibilidad de productos para responder con mayor rapidez a pedidos y
+                  necesidades de obra.
+                </p>
+              </div>
+            </article>
+
+            <article class="documentary-evidence documentary-evidence--delivery" data-operational-reveal>
+              <div
+                class="documentary-evidence__media"
+                role="img"
+                aria-label="Espacio reservado para una fotografía real de despacho FORTICEM"
+              >
+                <span>Fotografía de carga o despacho pendiente</span>
+              </div>
+              <div class="documentary-evidence__copy">
+                <span class="evidence-index">04 / Entrega</span>
+                <h3>Coordinación hasta obra.</h3>
+                <p>
+                  Coordinamos despachos y entregas hacia obra según producto, volumen y ubicación.
+                </p>
+              </div>
+            </article>
+          </div>
+
+          <aside class="operational-trust__human" aria-labelledby="human-support-title" data-operational-reveal>
+            <div class="operational-trust__human-heading">
+              <span class="evidence-index">05–06 / Atención + asesoría</span>
+              <h3 id="human-support-title">Una coordinación directa.</h3>
+            </div>
+            <div class="operational-trust__human-copy">
+              <p>
+                Atención para coordinar producto, cantidad, ubicación y requerimientos del proyecto.
+              </p>
+              <p>
+                Te ayudamos a identificar una solución según la aplicación y necesidad de obra.
+              </p>
+            </div>
+            <a
+              class="operational-trust__cta"
+              href="https://wa.me/51926793050?text=Hola%20FORTICEM%2C%20quisiera%20consultar%20disponibilidad%20y%20cotizar%20productos%20para%20una%20obra."
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Hablar con un asesor
+              <svg aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M5 12h13M13 7l5 5-5 5" />
+              </svg>
+            </a>
+          </aside>
+
+          <div class="operational-trust__next" aria-hidden="true">
+            <span></span>
+            <p>Conoce dónde producimos.</p>
+            <i></i>
+          </div>
+        </div>
+      </section>
+
+      <section
+        class="plants-section"
+        id="plantas"
+        aria-labelledby="plants-title"
+        data-plants-section
+      >
+        <div class="plants-section__inner container">
+          <header class="plants-section__header" data-plants-reveal>
+            <span class="section-label">
+              <i aria-hidden="true"></i>
+              Nuestra operación
+            </span>
+            <div class="plants-section__heading">
+              <h2 id="plants-title">Donde construimos<br />nuestra calidad.</h2>
+              <p>
+                Espacios de producción y operación donde preparamos los productos que después
+                llegan a obras, distribuidores y clientes.
+              </p>
+            </div>
+          </header>
+
+          <div class="plants-section__route" aria-hidden="true" data-plants-reveal>
+            <span>01</span>
+            <i></i>
+            <span>02</span>
+          </div>
+
+          <div class="plants-section__list">
+            <article class="plant-feature plant-feature--ventanilla" data-plants-reveal>
+              <figure class="plant-feature__media">
+                <div
+                  class="plant-feature__placeholder"
+                  role="img"
+                  aria-label="Espacio reservado para una fotografía real de la operación FORTICEM en Ventanilla"
+                >
+                  <span>Archivo operativo / 01</span>
+                  <strong>Registro fotográfico pendiente</strong>
+                  <small>Ventanilla</small>
+                </div>
+                <figcaption>
+                  <span>Planta 01</span>
+                  <span>Ubicación confirmada</span>
+                </figcaption>
+              </figure>
+
+              <div class="plant-feature__content">
+                <div class="plant-feature__index" aria-hidden="true">01</div>
+                <p class="plant-feature__descriptor">Planta / Operación FORTICEM</p>
+                <h3>Ventanilla</h3>
+                <p class="plant-feature__copy">
+                  Punto de operación de FORTICEM en Ventanilla. Su registro fotográfico se
+                  incorporará cuando estén disponibles imágenes verificadas de la instalación.
+                </p>
+                <address class="plant-feature__address">
+                  <span>Referencia registrada</span>
+                  Cal. 9 Mza. A2 Lote 10<br />
+                  A.H. Las Lomas de Ventanilla
+                </address>
+              </div>
+            </article>
+
+            <article class="plant-feature plant-feature--pachacutec" data-plants-reveal>
+              <figure class="plant-feature__media">
+                <div
+                  class="plant-feature__placeholder"
+                  role="img"
+                  aria-label="Espacio reservado para una fotografía real de la planta FORTICEM en Pachacútec"
+                >
+                  <span>Archivo operativo / 02</span>
+                  <strong>Registro fotográfico pendiente</strong>
+                  <small>Pachacútec</small>
+                </div>
+                <figcaption>
+                  <span>Planta 02</span>
+                  <span>Ubicación confirmada</span>
+                </figcaption>
+              </figure>
+
+              <div class="plant-feature__content">
+                <div class="plant-feature__index" aria-hidden="true">02</div>
+                <p class="plant-feature__descriptor">Planta FORTICEM</p>
+                <h3>Pachacútec</h3>
+                <p class="plant-feature__copy">
+                  FORTICEM cuenta adicionalmente con una planta en Pachacútec. La documentación
+                  visual y los detalles de su operación se publicarán cuando estén verificados.
+                </p>
+                <p class="plant-feature__status">
+                  <span aria-hidden="true"></span>
+                  Segunda ubicación operativa
+                </p>
+              </div>
+            </article>
+          </div>
+
+          <div class="plants-section__bridge" aria-hidden="true" data-plants-reveal>
+            <span>Desde nuestras plantas</span>
+            <i></i>
+            <p>De aquí,<br />a tu proyecto.</p>
+          </div>
+        </div>
+      </section>
+
+      <section
+        class="deliveries-section"
+        id="entregas"
+        aria-labelledby="deliveries-title"
+        data-deliveries-section
+      >
+        <div class="deliveries-section__inner container">
+          <header class="deliveries-section__header" data-deliveries-reveal>
+            <span class="section-label section-label--light">
+              <i aria-hidden="true"></i>
+              Entregas FORTICEM
+            </span>
+            <div class="deliveries-section__heading">
+              <h2 id="deliveries-title">De nuestra planta<br />a tu proyecto.</h2>
+              <p>
+                Productos FORTICEM preparados y despachados para obras, distribuidores y clientes
+                en diferentes destinos.
+              </p>
+            </div>
+          </header>
+
+          <div class="deliveries-section__ledger" aria-hidden="true" data-deliveries-reveal>
+            <span>Planta</span>
+            <i></i>
+            <span>Destino</span>
+          </div>
+
+          <div class="deliveries-grid" data-deliveries-grid></div>
+
+          <div class="deliveries-empty" data-deliveries-empty data-deliveries-reveal>
+            <div class="deliveries-empty__index" aria-hidden="true">00</div>
+            <div>
+              <span>Archivo de entregas</span>
+              <h3>Registros documentales en preparación.</h3>
+            </div>
+            <p>
+              Las entregas se publicarán cuando producto, destino y fotografía estén confirmados.
+            </p>
+          </div>
+
+          <div class="deliveries-section__actions" data-deliveries-reveal>
+            <p><span aria-hidden="true"></span> Archivo completo en preparación</p>
+          </div>
+        </div>
+      </section>
+
+      <section
+        class="trusted-companies"
+        id="clientes-socios"
+        aria-labelledby="trusted-companies-title"
+        data-trusted-companies
+      >
+        <div class="trusted-companies__inner container">
+          <header class="trusted-companies__header" data-companies-reveal>
+            <span class="section-label">
+              <i aria-hidden="true"></i>
+              Confianza que se construye
+            </span>
+            <div class="trusted-companies__heading">
+              <h2 id="trusted-companies-title">Empresas que confían<br />en FORTICEM.</h2>
+              <p>
+                Relaciones comerciales construidas a partir de productos, atención y cumplimiento
+                en cada operación.
+              </p>
+            </div>
+          </header>
+
+          <div class="company-carousel" data-company-carousel hidden>
+            <div class="company-carousel__topline">
+              <p>Galería 360° · arrastra o usa las flechas para girar</p>
+              <div class="company-carousel__controls" aria-label="Controles del carrusel">
+                <button type="button" aria-label="Ver socios anteriores" data-company-prev>←</button>
+                <button type="button" aria-label="Ver más socios" data-company-next>→</button>
+              </div>
+            </div>
+            <ul
+              class="company-logo-grid"
+              aria-label="Empresas que trabajan con FORTICEM"
+              data-company-grid
+            ></ul>
+          </div>
+
+          <div class="trusted-companies__empty" data-company-empty data-companies-reveal>
+            <span>Directorio corporativo</span>
+            <p>
+              Las marcas se incorporarán únicamente después de validar su identidad, relación
+              comercial y autorización de uso.
+            </p>
+          </div>
+
+          <div class="trusted-companies__handoff" aria-hidden="true" data-companies-reveal>
+            <span></span>
+            <p>La siguiente conversación comienza con tu proyecto.</p>
+            <i></i>
+          </div>
+        </div>
+      </section>
+
+      <section
+        class="quote-section"
+        id="cotizacion"
+        aria-labelledby="quote-title"
+        data-quote-section
+        data-default-product=""
+      >
+        <div class="quote-section__inner container">
+          <div class="quote-section__content" data-quote-reveal>
+            <span class="section-label section-label--light">
+              <i aria-hidden="true"></i>
+              Solicita una cotización
+            </span>
+            <h2 id="quote-title">Hablemos de<br />tu proyecto.</h2>
+            <p class="quote-section__intro">
+              Cuéntanos qué producto necesitas, cantidad y ubicación. Te ayudaremos a preparar una
+              cotización según los requerimientos de tu proyecto.
+            </p>
+
+            <div class="quote-section__direct">
+              <span>¿Prefieres atención directa?</span>
+              <a data-advisor-link target="_blank" rel="noopener noreferrer">
+                Hablar con un asesor
+                <svg aria-hidden="true" viewBox="0 0 24 24">
+                  <path d="M5 12h13M13 7l5 5-5 5" />
+                </svg>
+              </a>
+              <small>WhatsApp · +51 926 793 050</small>
+            </div>
+          </div>
+
+          <div class="quote-section__connector" aria-hidden="true" data-quote-reveal>
+            <span></span><i></i>
+          </div>
+
+          <form class="quote-form" data-quote-form novalidate data-quote-reveal>
+            <div class="quote-form__header">
+              <span>Cotización / WhatsApp</span>
+              <p>Cuéntanos qué necesitas.</p>
+            </div>
+
+            <div class="quote-form__grid">
+              <div class="quote-field">
+                <label for="quote-name">Nombre</label>
+                <input
+                  id="quote-name"
+                  name="name"
+                  type="text"
+                  placeholder="Ej. Carlos Ramírez"
+                  autocomplete="name"
+                  aria-describedby="quote-name-error"
+                  aria-invalid="false"
+                  required
+                />
+                <span class="quote-field__error" id="quote-name-error" hidden></span>
+              </div>
+
+              <div class="quote-field">
+                <label for="quote-company">Empresa <span>Opcional</span></label>
+                <input
+                  id="quote-company"
+                  name="company"
+                  type="text"
+                  placeholder="Ej. Constructora XYZ"
+                  autocomplete="organization"
+                  aria-invalid="false"
+                />
+              </div>
+
+              <div class="quote-field">
+                <label for="quote-product">Producto</label>
+                <select
+                  id="quote-product"
+                  name="product"
+                  aria-describedby="quote-product-error"
+                  aria-invalid="false"
+                  required
+                >
+                  <option value="">Selecciona un producto</option>
+                </select>
+                <span class="quote-field__error" id="quote-product-error" hidden></span>
+              </div>
+
+              <div class="quote-field">
+                <label for="quote-quantity">Cantidad</label>
+                <input
+                  id="quote-quantity"
+                  name="quantity"
+                  type="text"
+                  placeholder="Ej. 2,000 unidades"
+                  aria-describedby="quote-quantity-error"
+                  aria-invalid="false"
+                  required
+                />
+                <span class="quote-field__error" id="quote-quantity-error" hidden></span>
+              </div>
+
+              <div class="quote-field quote-field--wide">
+                <label for="quote-location">Ubicación</label>
+                <input
+                  id="quote-location"
+                  name="location"
+                  type="text"
+                  placeholder="Ej. Callao, Lima"
+                  autocomplete="address-level2"
+                  aria-describedby="quote-location-error"
+                  aria-invalid="false"
+                  required
+                />
+                <span class="quote-field__error" id="quote-location-error" hidden></span>
+              </div>
+
+              <div class="quote-field quote-field--wide">
+                <label for="quote-details">Detalles adicionales <span>Opcional</span></label>
+                <textarea
+                  id="quote-details"
+                  name="details"
+                  rows="3"
+                  placeholder="Cuéntanos si necesitas entrega, medida específica o algún requerimiento adicional."
+                  aria-invalid="false"
+                ></textarea>
+              </div>
+            </div>
+
+            <button class="quote-form__submit" type="submit">
+              Cotizar por WhatsApp
+              <svg aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M5 12h13M13 7l5 5-5 5" />
+              </svg>
+            </button>
+            <p class="quote-form__microcopy">La cotización se enviará mediante WhatsApp.</p>
+            <p class="quote-form__status" data-quote-status aria-live="polite"></p>
+            <a
+              class="quote-form__fallback"
+              data-quote-fallback
+              href="https://wa.me/51926793050"
+              target="_blank"
+              rel="noopener noreferrer"
+              hidden
+            >
+              Abrir WhatsApp manualmente
+            </a>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer" aria-labelledby="footer-brand-name">
+      <div class="site-footer__rule" aria-hidden="true"><span></span><i></i></div>
+
+      <div class="site-footer__main container">
+        <div class="site-footer__brand-block">
+          <a class="footer-brand" href="#inicio" aria-label="FORTICEM, volver al inicio">
+            <img class="footer-brand__symbol" src="assets/brand/forticem-symbol-light.svg" width="48" height="56" alt="" loading="lazy" />
+            <span class="footer-brand__name" id="footer-brand-name">FORTICEM</span>
+            <span class="footer-brand__descriptor">Química aplicada a la construcción</span>
+          </a>
+          <p>Prefabricados de concreto, aditivos químicos y soluciones técnicas para construcción.</p>
+          <div class="site-footer__disciplines" aria-label="Áreas de especialidad">
+            <span>Prefabricados</span><i aria-hidden="true"></i>
+            <span>Aditivos</span><i aria-hidden="true"></i>
+            <span>Soluciones para obra</span>
+          </div>
+        </div>
+
+        <nav class="footer-nav" aria-label="Navegación del pie de página" data-footer-nav></nav>
+      </div>
+
+      <div class="site-footer__corporate container">
+        <div class="footer-location">
+          <span>Planta Ventanilla</span>
+          <address>Cal. 9 Mza. A2 Lote 10<br />A.H. Las Lomas de Ventanilla<br />Callao — Perú</address>
+        </div>
+        <div class="footer-location">
+          <span>Operación adicional</span>
+          <p>Pachacútec</p>
+        </div>
+        <div class="footer-contact">
+          <span>WhatsApp</span>
+          <a data-footer-whatsapp target="_blank" rel="noopener noreferrer">+51 926 793 050</a>
+          <a class="footer-contact__action" data-footer-advisor target="_blank" rel="noopener noreferrer">
+            Hablar con un asesor <span aria-hidden="true">→</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="site-footer__bottom container">
+        <p>© <span data-footer-year></span> FORTICEM. Todos los derechos reservados.</p>
+        <a href="#inicio">Volver arriba <span aria-hidden="true">↑</span></a>
+      </div>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Solución técnica FORTICEM para concreto." />
+    <meta name="theme-color" content="#04142F" />
+    <title>Producto | FORTICEM</title>
+    <link rel="icon" type="image/svg+xml" href="../../assets/brand/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../../styles.css?v=20260921-brand1" />
+    <link rel="stylesheet" href="../../assets/product-header.css?v=20260921-1" />
+    <link rel="stylesheet" href="../../product-page.css" />
+    <script type="module" src="../../assets/product-header.js?v=20260921-1"></script>
+    <script type="module" src="../../product-page.js"></script>
+  </head>
+  <body class="product-page" data-product-slug="cure">
+    <header class="product-page__header">
+      <a class="brand" href="../../#inicio" aria-label="FORTICEM, volver al inicio">
+        <span class="brand__name">FORTICEM</span>
+        <span class="brand__descriptor">Química aplicada a la construcción</span>
+      </a>
+      <a class="product-page__back" href="../../#productos">← Volver a productos</a>
+    </header>
+    <main>
+      <section class="product-page__hero" aria-labelledby="product-title">
+        <div class="product-page__hero-inner container">
+          <div>
+            <span class="product-page__eyebrow" data-product-descriptor></span>
+            <h1 id="product-title" data-product-name></h1>
+            <p class="product-page__problem" data-product-problem></p>
+            <div class="product-page__actions">
+              <a class="hero__primary" data-product-quote href="#">Cotizar este producto <span aria-hidden="true">↗</span></a>
+              <a class="hero__secondary" href="#informacion">Ver aplicaciones <span aria-hidden="true">↓</span></a>
+            </div>
+          </div>
+          <figure class="product-page__visual">
+            <picture>
+              <source type="image/avif" srcset="../../assets/images/products/aditivos-forticem-familia-studio-v1.avif" />
+              <source type="image/webp" srcset="../../assets/images/products/aditivos-forticem-familia-studio-v1.webp" />
+              <img src="../../assets/images/products/aditivos-forticem-familia-studio-v1.png" width="1080" height="1080" alt="Familia de aditivos FORTICEM" />
+            </picture>
+          </figure>
+        </div>
+      </section>
+      <section class="product-page__body container" id="informacion">
+        <h2>Información<br />del producto.</h2>
+        <div>
+          <p class="product-page__description" data-product-description></p>
+          <ul class="product-page__applications" data-product-applications></ul>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
