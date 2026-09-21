@@ -5,7 +5,6 @@ const slug = document.body.dataset.productSlug;
 const product = additiveProducts[slug];
 
 if (product) {
-  document.title = `${product.name} | FORTICEM`;
   document.querySelectorAll("[data-product-name]").forEach((element) => {
     element.textContent = product.name;
   });
