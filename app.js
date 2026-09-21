@@ -473,12 +473,44 @@ if (productCarousel) {
   const currentLabel = productCarousel.querySelector("[data-carousel-current]");
   let activeSlide = 0;
   let autoplayTimer = null;
+  let carouselInView = !("IntersectionObserver" in window);
+  let modelViewerIdleReady = false;
+  let modelViewerReady = false;
+  let modelViewerRequest = null;
+  const progressBar = carousel?.querySelector(".hero-carousel__progress span");
+  let progressAnimation = null;
+
+  const activateModel = (slide) => {
+    const model = slide?.querySelector("model-viewer[data-src]");
+    if (!model || !modelViewerReady) return;
+    model.setAttribute("src", model.dataset.src);
+    delete model.dataset.src;
+  };
+
+  const loadModelViewer = () => {
+    if (modelViewerRequest) return modelViewerRequest;
+    modelViewerRequest = import("./assets/vendor/model-viewer.min.js")
+      .then(() => {
+        modelViewerReady = true;
+        activateModel(slides[activeSlide]);
+      })
+      .catch(() => { modelViewerRequest = null; });
+    return modelViewerRequest;
+  };
+
+  slides.forEach((slide) => {
+    slide.querySelector("model-viewer")?.addEventListener("load", () => {
+      slide.classList.add("is-model-ready");
+    }, { once: true });
+  });
 
   const restartProgress = () => {
-    if (!carousel || reduceMotion.matches || !autoplayTimer) return;
-    carousel.classList.remove("is-playing");
-    void carousel.offsetWidth;
-    carousel.classList.add("is-playing");
+    progressAnimation?.cancel();
+    if (!progressBar || reduceMotion.matches || !autoplayTimer) return;
+    progressAnimation = progressBar.animate(
+      [{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }],
+      { duration: 5000, easing: "linear", fill: "forwards" }
+    );
   };
 
   const showSlide = (nextIndex, direction = "next") => {
@@ -486,6 +518,12 @@ if (productCarousel) {
     productCarousel.dataset.direction = direction;
     slides.forEach((slide, index) => {
       const isActive = index === activeSlide;
+      if (isActive) {
+        const model = slide.querySelector("model-viewer");
+        const poster = slide.querySelector(".hero-slide__poster");
+        if (model && poster && !poster.hasAttribute("src")) poster.src = model.dataset.poster;
+        activateModel(slide);
+      }
       slide.classList.toggle("is-active", isActive);
       slide.setAttribute("aria-hidden", String(!isActive));
     });
@@ -496,12 +534,12 @@ if (productCarousel) {
   const stopAutoplay = () => {
     window.clearInterval(autoplayTimer);
     autoplayTimer = null;
-    carousel?.classList.remove("is-playing");
+    progressAnimation?.cancel();
   };
 
   const startAutoplay = () => {
-    if (reduceMotion.matches || document.hidden || autoplayTimer) return;
-    autoplayTimer = window.setInterval(() => showSlide(activeSlide + 1, "next"), 2500);
+    if (reduceMotion.matches || document.hidden || !carouselInView || autoplayTimer) return;
+    autoplayTimer = window.setInterval(() => showSlide(activeSlide + 1, "next"), 5000);
     restartProgress();
   };
 
@@ -516,14 +554,22 @@ if (productCarousel) {
   });
 
   productCarousel.addEventListener("mouseenter", stopAutoplay);
+  productCarousel.addEventListener("pointerenter", loadModelViewer, { once: true });
+  productCarousel.addEventListener("pointerdown", loadModelViewer, { once: true });
   productCarousel.addEventListener("mouseleave", startAutoplay);
-  productCarousel.addEventListener("focusin", stopAutoplay);
+  productCarousel.addEventListener("focusin", () => {
+    stopAutoplay();
+    loadModelViewer();
+  });
   productCarousel.addEventListener("focusout", (event) => {
     if (!productCarousel.contains(event.relatedTarget)) startAutoplay();
   });
   document.addEventListener("visibilitychange", () => {
     if (document.hidden) stopAutoplay();
-    else startAutoplay();
+    else {
+      startAutoplay();
+      if (modelViewerIdleReady && carouselInView) loadModelViewer();
+    }
   });
   reduceMotion.addEventListener("change", () => {
     if (reduceMotion.matches) stopAutoplay();
@@ -532,6 +578,22 @@ if (productCarousel) {
 
   showSlide(0);
   startAutoplay();
+  window.addEventListener("load", () => {
+    window.setTimeout(() => {
+      modelViewerIdleReady = true;
+      if (carouselInView && !document.hidden) loadModelViewer();
+    }, 6500);
+  }, { once: true });
+  if ("IntersectionObserver" in window) {
+    const carouselObserver = new IntersectionObserver(([entry]) => {
+      carouselInView = entry.isIntersecting;
+      if (carouselInView) {
+        startAutoplay();
+        if (modelViewerIdleReady) loadModelViewer();
+      } else stopAutoplay();
+    }, { threshold: 0.05 });
+    carouselObserver.observe(productCarousel);
+  }
 }
 
 const featuredGrid = document.querySelector("[data-featured-grid]");
@@ -675,9 +737,25 @@ const queueTechnicalStoryUpdate = () => {
 };
 
 if (technicalStory && !reduceMotion.matches) {
-  window.addEventListener("scroll", queueTechnicalStoryUpdate, { passive: true });
-  window.addEventListener("resize", queueTechnicalStoryUpdate);
-  queueTechnicalStoryUpdate();
+  const observeTechnicalStory = (visible) => {
+    if (visible) {
+      window.addEventListener("scroll", queueTechnicalStoryUpdate, { passive: true });
+      window.addEventListener("resize", queueTechnicalStoryUpdate);
+      queueTechnicalStoryUpdate();
+    } else {
+      window.removeEventListener("scroll", queueTechnicalStoryUpdate);
+      window.removeEventListener("resize", queueTechnicalStoryUpdate);
+    }
+  };
+
+  if ("IntersectionObserver" in window) {
+    const technicalObserver = new IntersectionObserver(([entry]) => {
+      observeTechnicalStory(entry.isIntersecting);
+    }, { rootMargin: "100px 0px" });
+    technicalObserver.observe(technicalStory);
+  } else {
+    observeTechnicalStory(true);
+  }
 }
 
 const operationalTrust = document.querySelector("[data-operational-trust]");
@@ -1021,6 +1099,8 @@ let companyRingLastFrame = 0;
 let companyRingFrontIndex = -1;
 let companyRingDrag = null;
 let suppressCompanyClick = false;
+let companyRingInView = false;
+let companyRingFrame = null;
 
 const normalizeCompanyAngle = (angle) => ((angle + 540) % 360) - 180;
 
@@ -1143,7 +1223,19 @@ companyGrid?.addEventListener("click", (event) => {
   suppressCompanyClick = false;
 }, true);
 
+const requestCompanyRingFrame = () => {
+  if (companyRingFrame !== null || !companyRingInView || document.hidden) return;
+  companyRingFrame = window.requestAnimationFrame((timestamp) => {
+    companyRingFrame = null;
+    animateCompanyRing(timestamp);
+  });
+};
+
 const animateCompanyRing = (timestamp) => {
+  if (!companyRingInView || document.hidden) {
+    companyRingLastFrame = 0;
+    return;
+  }
   const elapsed = companyRingLastFrame ? Math.min(timestamp - companyRingLastFrame, 40) : 0;
   companyRingLastFrame = timestamp;
 
@@ -1164,9 +1256,25 @@ const animateCompanyRing = (timestamp) => {
     updateCompanyRing();
   }
 
-  window.requestAnimationFrame(animateCompanyRing);
+  requestCompanyRingFrame();
 };
-window.requestAnimationFrame(animateCompanyRing);
+if (companyGrid && "IntersectionObserver" in window) {
+  const ringObserver = new IntersectionObserver(([entry]) => {
+    if (entry.isIntersecting && !companyRingInView) {
+      companyRingInView = true;
+      requestCompanyRingFrame();
+    } else if (!entry.isIntersecting) {
+      companyRingInView = false;
+    }
+  }, { threshold: 0.02 });
+  ringObserver.observe(companyGrid);
+} else if (companyGrid) {
+  companyRingInView = true;
+  requestCompanyRingFrame();
+}
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) requestCompanyRingFrame();
+});
 
 const revealTrustedCompanies = () => {
   trustedCompaniesSection?.classList.add("is-visible");

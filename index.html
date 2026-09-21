@@ -21,18 +21,15 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="preload"
-      href="assets/images/products/separadores-concreto-studio-v2.avif"
+      href="assets/images/products/separadores-concreto-studio-v2.webp"
       as="image"
-      type="image/avif"
+      type="image/webp"
       fetchpriority="high"
     />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="styles.css?v=20260921-brand1" />
-    <script type="module" src="assets/vendor/model-viewer.min.js"></script>
-    <script type="module" src="app.js?v=20260921-1"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet" /></noscript>
+    <link rel="stylesheet" href="styles.css?v=20260921-performance2" />
+    <script type="module" src="app.js?v=20260921-performance4"></script>
   </head>
   <body>
     <a class="skip-link" href="#inicio">Saltar al contenido</a>
@@ -203,10 +200,11 @@
             <div class="hero-carousel" aria-roledescription="carrusel" aria-label="Productos FORTICEM">
               <div class="hero-carousel__viewport" aria-live="polite">
                 <article class="hero-slide hero-slide--model is-active" data-product-slide aria-hidden="false">
+                  <img class="hero-slide__poster" src="assets/images/products/separadores-concreto-studio-v2.webp" alt="" fetchpriority="high" decoding="async" />
                   <model-viewer
                     class="hero-slide__model"
-                    src="assets/models/separadores-concreto-v1.glb"
-                    poster="assets/images/products/separadores-concreto-studio-v2.webp"
+                    data-src="assets/models/separadores-concreto-v1.glb"
+                    data-poster="assets/images/products/separadores-concreto-studio-v2.webp"
                     alt="Modelo 3D interactivo de separadores de concreto FORTICEM de 2,5, 4 y 7 cm"
                     camera-controls
                     auto-rotate
@@ -227,10 +225,11 @@
                 </article>
 
                 <article class="hero-slide hero-slide--model" data-product-slide aria-hidden="true">
+                  <img class="hero-slide__poster" alt="" decoding="async" />
                   <model-viewer
                     class="hero-slide__model"
-                    src="assets/models/aditivos-forticem-familia-v1.glb"
-                    poster="assets/images/products/aditivos-forticem-familia-studio-v1.webp"
+                    data-src="assets/models/aditivos-forticem-familia-v1.glb"
+                    data-poster="assets/images/products/aditivos-forticem-familia-studio-v1.webp"
                     alt="Modelos 3D interactivos de FORTICEM FLOW, CURE y RELEASE en presentaciones de 200, 20 y 4 litros"
                     camera-controls
                     auto-rotate
@@ -251,10 +250,11 @@
                 </article>
 
                 <article class="hero-slide hero-slide--model" data-product-slide aria-hidden="true">
+                  <img class="hero-slide__poster" alt="" decoding="async" />
                   <model-viewer
                     class="hero-slide__model"
-                    src="assets/models/block-michi-v1.glb"
-                    poster="assets/images/products/block-michi-3d-cutout-v1.webp"
+                    data-src="assets/models/block-michi-v1.glb"
+                    data-poster="assets/images/products/block-michi-3d-cutout-v1.webp"
                     alt="Modelo 3D interactivo del Block Grass tipo Michi FORTICEM"
                     camera-controls
                     auto-rotate
@@ -275,10 +275,11 @@
                 </article>
 
                 <article class="hero-slide hero-slide--model" data-product-slide aria-hidden="true">
+                  <img class="hero-slide__poster" alt="" decoding="async" />
                   <model-viewer
                     class="hero-slide__model"
-                    src="assets/models/block-grass-tipo-8-v1.glb?v=2"
-                    poster="assets/images/products/block-grass-tipo-8-reference.png"
+                    data-src="assets/models/block-grass-tipo-8-v1.glb?v=2"
+                    data-poster="assets/images/products/block-grass-tipo-8-reference.webp"
                     alt="Modelo 3D interactivo del Block Grass tipo 8 FORTICEM con dos aberturas romboidales"
                     camera-controls
                     auto-rotate
@@ -299,10 +300,11 @@
                 </article>
 
                 <article class="hero-slide hero-slide--model" data-product-slide aria-hidden="true">
+                  <img class="hero-slide__poster" alt="" decoding="async" />
                   <model-viewer
                     class="hero-slide__model"
-                    src="assets/models/king-block-familia-v1.glb"
-                    poster="assets/images/products/king-block-familia-studio-v1.webp"
+                    data-src="assets/models/king-block-familia-v1.glb"
+                    data-poster="assets/images/products/king-block-familia-studio-v1.webp"
                     alt="Modelos 3D interactivos de la familia King Block FORTICEM P9, P12 y P13"
                     camera-controls
                     auto-rotate
@@ -323,10 +325,11 @@
                 </article>
 
                 <article class="hero-slide hero-slide--model" data-product-slide aria-hidden="true">
+                  <img class="hero-slide__poster" alt="" decoding="async" />
                   <model-viewer
                     class="hero-slide__model"
-                    src="assets/models/escantillon-concreto-v1.glb"
-                    poster="assets/images/products/escantillones-studio-v2.webp"
+                    data-src="assets/models/escantillon-concreto-v1.glb"
+                    data-poster="assets/images/products/escantillones-studio-v2.webp"
                     alt="Modelos 3D interactivos de escantillones de concreto FORTICEM de 20, 25 y 30 cm"
                     camera-controls
                     auto-rotate
@@ -347,10 +350,11 @@
                 </article>
 
                 <article class="hero-slide hero-slide--model" data-product-slide aria-hidden="true">
+                  <img class="hero-slide__poster" alt="" decoding="async" />
                   <model-viewer
                     class="hero-slide__model"
-                    src="assets/models/adoquines-familia-v1.glb"
-                    poster="assets/images/products/adoquines-colores-studio-v1.webp"
+                    data-src="assets/models/adoquines-familia-v1.glb"
+                    data-poster="assets/images/products/adoquines-colores-studio-v1.webp"
                     alt="Modelo 3D interactivo de adoquines FORTICEM en rojo, gris y negro"
                     camera-controls
                     auto-rotate
@@ -773,18 +777,10 @@
 
           <div class="operational-trust__lead" data-operational-reveal>
             <figure class="operational-photo operational-photo--lead">
-              <div
-                class="operational-photo__placeholder"
-                role="img"
-                aria-label="Espacio reservado para una fotografía real de fabricación FORTICEM"
-              >
-                <span>Registro operativo / 01</span>
-                <strong>Fotografía real de producción pendiente</strong>
-                <small>No se utiliza imagen de stock</small>
-              </div>
+              <img class="operational-photo__image" src="assets/images/operations/planta-ventanilla.webp" width="1800" height="1800" alt="Vista exterior de la instalación FORTICEM en Ventanilla, con materiales preparados en el área de operación" loading="lazy" />
               <figcaption>
-                <span>Fabricación FORTICEM</span>
-                <span>Registro documental pendiente</span>
+                <span>Operación FORTICEM</span>
+                <span>Planta Ventanilla</span>
               </figcaption>
             </figure>
 
@@ -821,12 +817,8 @@
             </article>
 
             <article class="documentary-evidence documentary-evidence--stock" data-operational-reveal>
-              <div
-                class="documentary-evidence__media"
-                role="img"
-                aria-label="Espacio reservado para una fotografía real de stock FORTICEM"
-              >
-                <span>Fotografía de almacén pendiente</span>
+              <div class="documentary-evidence__media">
+                <img src="assets/images/block-grass-entregas/pedido-michis3-thumb.webp" width="1100" height="618" alt="Bloques Grass FORTICEM apilados y preparados para atender un pedido" loading="lazy" />
               </div>
               <div class="documentary-evidence__copy">
                 <span class="evidence-index">03 / Stock</span>
@@ -839,12 +831,8 @@
             </article>
 
             <article class="documentary-evidence documentary-evidence--delivery" data-operational-reveal>
-              <div
-                class="documentary-evidence__media"
-                role="img"
-                aria-label="Espacio reservado para una fotografía real de despacho FORTICEM"
-              >
-                <span>Fotografía de carga o despacho pendiente</span>
+              <div class="documentary-evidence__media">
+                <img src="assets/images/block-grass-entregas/entrega-5to-sector-thumb.webp" width="619" height="1100" alt="Camión y bloques Grass FORTICEM durante una entrega en obra" loading="lazy" />
               </div>
               <div class="documentary-evidence__copy">
                 <span class="evidence-index">04 / Entrega</span>
@@ -920,18 +908,10 @@
           <div class="plants-section__list">
             <article class="plant-feature plant-feature--ventanilla" data-plants-reveal>
               <figure class="plant-feature__media">
-                <div
-                  class="plant-feature__placeholder"
-                  role="img"
-                  aria-label="Espacio reservado para una fotografía real de la operación FORTICEM en Ventanilla"
-                >
-                  <span>Archivo operativo / 01</span>
-                  <strong>Registro fotográfico pendiente</strong>
-                  <small>Ventanilla</small>
-                </div>
+                <img class="plant-feature__image" src="assets/images/operations/planta-ventanilla.webp" width="1800" height="1800" alt="Fachada de la planta de FORTICEM en Ventanilla" loading="lazy" />
                 <figcaption>
                   <span>Planta 01</span>
-                  <span>Ubicación confirmada</span>
+                  <span>Ventanilla</span>
                 </figcaption>
               </figure>
 
@@ -940,8 +920,8 @@
                 <p class="plant-feature__descriptor">Planta / Operación FORTICEM</p>
                 <h3>Ventanilla</h3>
                 <p class="plant-feature__copy">
-                  Punto de operación de FORTICEM en Ventanilla. Su registro fotográfico se
-                  incorporará cuando estén disponibles imágenes verificadas de la instalación.
+                  Punto de operación de FORTICEM en Ventanilla. La fotografía muestra la fachada
+                  y el área de materiales de esta instalación.
                 </p>
                 <address class="plant-feature__address">
                   <span>Referencia registrada</span>
