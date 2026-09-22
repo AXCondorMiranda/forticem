@@ -28,7 +28,7 @@ export const deliveries = Object.freeze([
     },
     alt: "Entrega documentada de separadores de concreto FORTICEM con destino a Ica",
     description: "Despacho documentado de separadores de concreto con destino a Ica.",
-    href: "/productos/separadores-concreto/index.html#evidencia",
+    href: "/productos/separadores-concreto/#evidencia",
     featured: true,
     priority: 1,
     objectPosition: "center",
