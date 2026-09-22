@@ -1,4 +1,5 @@
 const legacyHeader = document.querySelector(".product-page__header");
+const catalogHref = document.body.dataset.productSlug ? "../../#linea-aditivos" : "../../#productos";
 
 if (legacyHeader) {
   legacyHeader.insertAdjacentHTML("beforebegin", `
@@ -43,7 +44,7 @@ if (legacyHeader) {
   legacyHeader.remove();
   document.querySelector(".product-page main")?.insertAdjacentHTML("afterbegin", `
     <nav class="product-section-nav" aria-label="Secciones del aditivo">
-      <div class="container product-section-nav__inner"><span>Aditivos FORTICEM</span><a href="#informacion">Información y aplicaciones</a><a href="../../#productos">Catálogo completo ↗</a></div>
+      <div class="container product-section-nav__inner"><span>Aditivos FORTICEM</span><a href="#informacion">Información y aplicaciones</a><a href="${catalogHref}">Catálogo completo ↗</a></div>
     </nav>
   `);
 }

@@ -5,11 +5,12 @@ import { buildAdvisorUrl, buildQuoteMessage, buildWhatsAppUrl } from "./quote.js
 const productCategories = [
   {
     label: "Aditivos",
-    href: "#aditivos",
+    href: "#linea-aditivos",
     children: [
       { label: "FORTICEM FLOW", meta: "Plastificante", href: "aditivos/flow/index.html" },
       { label: "FORTICEM FLOW+", meta: "Superplastificante", href: "aditivos/flow-plus/index.html" },
       { label: "FORTICEM CURE", meta: "Curador de concreto", href: "aditivos/cure/index.html" },
+      { label: "FORTICEM FAST", meta: "Acelerante", href: "aditivos/fast/index.html" },
       { label: "FORTICEM RELEASE", meta: "Desmoldante", href: "aditivos/release/index.html" },
       { label: "FORTICEM SEAL", meta: "Impermeabilizante", href: "aditivos/seal/index.html" },
     ],
@@ -54,12 +55,12 @@ const productCategories = [
 ];
 
 const solutionCategories = [
-  { label: "Mejorar trabajabilidad", href: "#soluciones" },
-  { label: "Acelerar fraguado", href: "#soluciones" },
+  { label: "Mejorar trabajabilidad", href: "aditivos/flow/index.html" },
+  { label: "Acelerar fraguado", href: "aditivos/fast/index.html" },
   { label: "Retardar fraguado", href: "#soluciones" },
-  { label: "Curado", href: "#soluciones" },
-  { label: "Impermeabilización", href: "#soluciones" },
-  { label: "Desmolde", href: "#soluciones" },
+  { label: "Curado", href: "aditivos/cure/index.html" },
+  { label: "Impermeabilización", href: "aditivos/seal/index.html" },
+  { label: "Desmolde", href: "aditivos/release/index.html" },
   { label: "Control de aire", href: "#soluciones" },
   { label: "Reducir burbujas", href: "#soluciones" },
   { label: "Recubrimiento de acero", href: "#soluciones" },
@@ -138,7 +139,7 @@ const featuredProducts = [
     alt: "Familia de aditivos FORTICEM en presentaciones de 4, 20 y 200 litros",
     technicalMetric: null,
     technicalLabel: null,
-    href: "#aditivos",
+    href: "#linea-aditivos",
     cta: "Explorar aditivos",
     theme: "navy",
     layout: "additives",
@@ -1446,7 +1447,7 @@ const footerSections = [
     title: "Soluciones",
     links: [
       { label: "Prefabricados y aditivos", href: "#soluciones" },
-      { label: "Soluciones químicas", href: "#aditivos" },
+      { label: "Soluciones químicas", href: "#linea-aditivos" },
       { label: "Información técnica", href: "#block-michi-tecnico" },
       { label: "Solicitar cotización", href: "#cotizacion" },
     ],
