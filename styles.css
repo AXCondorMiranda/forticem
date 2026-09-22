@@ -7309,12 +7309,39 @@ button {
   transition: background-color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
 }
 
+.motion-ready .motion-whatsapp-entry {
+  opacity: 0;
+  transform: translateY(1rem) scale(0.96);
+  transition: opacity 420ms var(--ease-standard), background-color var(--transition-fast), box-shadow var(--transition-fast), transform 420ms var(--ease-standard);
+}
+
+.motion-ready .motion-whatsapp-entry.is-motion-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.motion-ready .motion-whatsapp-entry.is-motion-visible::after {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border: 2px solid rgb(22 138 91 / 55%);
+  border-radius: inherit;
+  content: "";
+  pointer-events: none;
+  animation: whatsapp-ring-once 1100ms 300ms var(--ease-standard) both;
+}
+
 .whatsapp-quick-quote:hover,
 .whatsapp-quick-quote:focus-visible {
   color: var(--color-white);
   background: #11764d;
   box-shadow: 0 1.1rem 2.8rem rgb(4 20 47 / 38%);
   transform: translateY(-0.18rem);
+}
+
+.motion-ready .motion-whatsapp-entry.is-motion-visible:hover,
+.motion-ready .motion-whatsapp-entry.is-motion-visible:focus-visible {
+  transform: translateY(-0.18rem) scale(1);
 }
 
 .whatsapp-quick-quote__icon {
@@ -7352,6 +7379,28 @@ button {
   line-height: 1.2;
 }
 
+.motion-ready .motion-reveal {
+  opacity: 0;
+  transform: translateY(1.25rem);
+  transition: opacity 560ms var(--ease-standard) var(--motion-delay, 0ms), transform 620ms var(--ease-standard) var(--motion-delay, 0ms);
+}
+
+.motion-ready .motion-reveal.is-motion-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@keyframes whatsapp-ring-once {
+  from {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.18, 1.42);
+  }
+}
+
 @media (max-width: 47.99rem) {
   .whatsapp-quick-quote {
     right: 0.8rem;
@@ -7367,7 +7416,15 @@ button {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .whatsapp-quick-quote {
+  .whatsapp-quick-quote,
+  .motion-ready .motion-whatsapp-entry,
+  .motion-ready .motion-reveal {
+    opacity: 1;
+    transform: none;
     transition: none;
+  }
+
+  .motion-ready .motion-whatsapp-entry.is-motion-visible::after {
+    animation: none;
   }
 }

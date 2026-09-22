@@ -1,5 +1,6 @@
 import { additiveProducts } from "./product-data.js";
 import { buildWhatsAppUrl } from "./quote.js";
+import { mountMotionEnhancements } from "./assets/motion-enhancements.js";
 
 const slug = document.body.dataset.productSlug;
 const product = additiveProducts[slug];
@@ -93,5 +94,6 @@ if (product) {
     }
     details.querySelector("[data-detail-sheet]").href = `../../assets/documents/${product.sheet}`;
     document.querySelector("main").append(details);
+    mountMotionEnhancements();
   }
 }

@@ -1,6 +1,8 @@
 import { mountQuickQuote } from "./whatsapp-cta.js";
+import { mountMotionEnhancements } from "./motion-enhancements.js";
 
 mountQuickQuote();
+mountMotionEnhancements();
 
 const legacyHeader = document.querySelector(".product-page__header");
 const catalogHref = document.body.dataset.productSlug ? "../../#linea-aditivos" : "../../#productos";
