@@ -7290,3 +7290,84 @@ button {
     grid-template-columns: 1fr;
   }
 }
+
+.whatsapp-quick-quote {
+  position: fixed;
+  right: clamp(1rem, 2.5vw, 2rem);
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  z-index: 95;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 4rem;
+  padding: 0.6rem 1rem 0.6rem 0.65rem;
+  border: 1px solid rgb(255 255 255 / 28%);
+  border-radius: 999px;
+  color: var(--color-white);
+  background: #168a5b;
+  box-shadow: 0 0.9rem 2.4rem rgb(4 20 47 / 30%);
+  transition: background-color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
+}
+
+.whatsapp-quick-quote:hover,
+.whatsapp-quick-quote:focus-visible {
+  color: var(--color-white);
+  background: #11764d;
+  box-shadow: 0 1.1rem 2.8rem rgb(4 20 47 / 38%);
+  transform: translateY(-0.18rem);
+}
+
+.whatsapp-quick-quote__icon {
+  display: grid;
+  width: 2.75rem;
+  height: 2.75rem;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  color: #168a5b;
+  background: var(--color-white);
+  place-items: center;
+}
+
+.whatsapp-quick-quote__icon svg {
+  width: 1.8rem;
+  height: 1.8rem;
+  fill: currentcolor;
+}
+
+.whatsapp-quick-quote__copy {
+  display: grid;
+  gap: 0.08rem;
+  text-align: left;
+}
+
+.whatsapp-quick-quote__copy strong {
+  font-family: var(--font-display);
+  font-size: 0.86rem;
+  line-height: 1.2;
+}
+
+.whatsapp-quick-quote__copy small {
+  color: rgb(255 255 255 / 78%);
+  font-size: 0.68rem;
+  line-height: 1.2;
+}
+
+@media (max-width: 47.99rem) {
+  .whatsapp-quick-quote {
+    right: 0.8rem;
+    bottom: max(0.8rem, env(safe-area-inset-bottom));
+    min-height: 3.6rem;
+    padding: 0.5rem 0.85rem 0.5rem 0.55rem;
+  }
+
+  .whatsapp-quick-quote__icon {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .whatsapp-quick-quote {
+    transition: none;
+  }
+}

@@ -1,3 +1,7 @@
+import { mountQuickQuote } from "./whatsapp-cta.js";
+
+mountQuickQuote();
+
 const legacyHeader = document.querySelector(".product-page__header");
 const catalogHref = document.body.dataset.productSlug ? "../../#linea-aditivos" : "../../#productos";
 

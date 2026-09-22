@@ -1,6 +1,9 @@
 import { getApprovedCompanies } from "./companies-data.js?v=20260917-6";
 import { getFeaturedDeliveries } from "./deliveries-data.js?v=20260916-2";
 import { buildAdvisorUrl, buildQuoteMessage, buildWhatsAppUrl } from "./quote.js";
+import { mountQuickQuote } from "./assets/whatsapp-cta.js";
+
+mountQuickQuote();
 
 const productCategories = [
   {
