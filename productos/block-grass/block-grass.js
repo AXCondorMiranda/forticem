@@ -3,7 +3,7 @@ const phone = "51926793050";
 document.querySelectorAll("[data-grass-quote]").forEach((link) => {
   const variant = link.dataset.grassQuote;
   const product = variant ? `Block Grass ${variant}` : "Block Grass FORTICEM";
-  const message = `Hola FORTICEM, quiero solicitar una cotización.\nProducto: ${product}\nCantidad: \nUbicación de entrega: `;
+  const message = `Hola FORTICEM, quiero solicitar una cotización.\nProducto: ${product}\nResistencia: 18 MPa / 35 MPa\nÁrea requerida:  m²\nCantidad estimada:  unidades\nDistrito de entrega: \nFecha requerida: `;
   link.href = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
   link.target = "_blank";
   link.rel = "noopener noreferrer";
