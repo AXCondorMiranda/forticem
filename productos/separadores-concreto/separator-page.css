@@ -121,6 +121,16 @@
 .separator-volume-callout p { margin: 0; color: rgb(255 255 255 / 65%); font-size: 0.85rem; line-height: 1.5; }
 .separator-volume-callout p strong { color: var(--color-white); }
 .separator-volume-callout a { color: var(--color-turquoise); font: 800 0.7rem var(--font-display); text-transform: uppercase; white-space: nowrap; }
+.separator-purchase-policy { margin-top: 1rem; border: 1px solid var(--color-concrete-300); background: var(--color-white); }
+.separator-purchase-policy summary { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 1rem; padding: 1.15rem 1.4rem; cursor: pointer; list-style: none; }
+.separator-purchase-policy summary::-webkit-details-marker { display: none; }
+.separator-purchase-policy summary span { color: var(--color-turquoise-hover); font: 800 0.62rem var(--font-display); letter-spacing: 0.08em; text-transform: uppercase; }
+.separator-purchase-policy summary strong { font-family: var(--font-display); font-size: 0.9rem; }
+.separator-purchase-policy summary i { color: var(--color-turquoise-hover); font-size: 1.3rem; font-style: normal; transition: transform 160ms ease; }
+.separator-purchase-policy[open] summary i { transform: rotate(45deg); }
+.separator-purchase-policy > div { display: grid; grid-template-columns: 0.7fr 1.3fr; gap: 1.5rem; padding: 0 1.4rem 1.25rem; border-top: 1px solid var(--color-concrete-300); }
+.separator-purchase-policy p { margin: 1.2rem 0 0; color: var(--color-graphite); font-size: 0.82rem; line-height: 1.6; }
+.separator-purchase-policy p strong { color: var(--color-navy); }
 .separator-technical-note { margin: 1rem 0 0; color: var(--color-graphite); font-size: 0.75rem; line-height: 1.55; }
 
 .separator-process { padding-block: clamp(5rem, 9vw, 9rem); color: var(--color-white); background: var(--color-navy-soft); }
@@ -203,6 +213,9 @@
   .measure-selection__prices { grid-template-columns: 1fr; }
   .measure-selection a { text-align: center; }
   .separator-volume-callout { grid-template-columns: 1fr; gap: 0.65rem; }
+  .separator-purchase-policy summary { grid-template-columns: 1fr auto; }
+  .separator-purchase-policy summary span { grid-column: 1 / -1; }
+  .separator-purchase-policy > div { grid-template-columns: 1fr; gap: 0; }
   .separator-process__steps { grid-template-columns: 1fr; }
   .separator-process__steps li { min-height: 11rem; border-bottom: 1px solid rgb(255 255 255 / 14%); border-left: 1px solid rgb(255 255 255 / 14%); }
   .separator-process__steps strong { margin-top: 2rem; }
