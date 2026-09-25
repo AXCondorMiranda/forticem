@@ -6,11 +6,36 @@ const selectedUse = document.querySelector("[data-selected-use]");
 const selectedUnits = document.querySelector("[data-selected-units]");
 const selectedWeight = document.querySelector("[data-selected-weight]");
 const selectedQuote = document.querySelector("[data-selected-quote]");
+const selectedPrices = document.querySelector("[data-selected-prices]");
+const selectedUnitPrice = document.querySelector("[data-selected-unit-price]");
+const selectedHundredPrice = document.querySelector("[data-selected-hundred-price]");
+const selectedThousandPrice = document.querySelector("[data-selected-thousand-price]");
+const priceTierButtons = [...document.querySelectorAll("[data-price-tier]")];
+const volumeQuote = document.querySelector("[data-volume-quote]");
+let activeSelection = null;
+let activeTier = "Millar";
 
-const buildQuoteUrl = (measure = "") => {
+const formatPrice = (value, decimals = 0) => `S/ ${Number(value).toLocaleString("en-US", {
+  minimumFractionDigits: decimals,
+  maximumFractionDigits: decimals,
+})}`;
+
+const buildQuoteUrl = (measure = "", tier = "", price = "") => {
   const detail = measure ? `\nMedida: ${measure}` : "";
-  const message = `Hola FORTICEM, quiero solicitar una cotización.\nProducto: Separadores de concreto${detail}`;
+  const presentation = tier ? `\nPresentación: ${tier}` : "";
+  const listedPrice = price ? `\nPrecio publicado con IGV: ${price}` : "";
+  const message = `Hola FORTICEM, quiero cotizar separadores de concreto.${detail}${presentation}${listedPrice}\nCantidad requerida: \nDistrito o destino: `;
   return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+};
+
+const updateSelectedQuote = () => {
+  if (!activeSelection || !selectedQuote) return;
+  const tierPrice = {
+    Unidad: formatPrice(activeSelection.unitPrice, 2),
+    Ciento: formatPrice(activeSelection.hundredPrice),
+    Millar: formatPrice(activeSelection.thousandPrice),
+  }[activeTier];
+  selectedQuote.href = buildQuoteUrl(activeSelection.measure, activeTier, tierPrice);
 };
 
 quoteLinks.forEach((link) => {
@@ -18,6 +43,13 @@ quoteLinks.forEach((link) => {
   link.target = "_blank";
   link.rel = "noopener noreferrer";
 });
+
+if (volumeQuote) {
+  const message = "Hola FORTICEM, necesito una cotización por volumen de separadores de concreto.\nCantidad: más de 2 millares\nMedida requerida: \nCantidad exacta: \nDistrito o destino: ";
+  volumeQuote.href = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+  volumeQuote.target = "_blank";
+  volumeQuote.rel = "noopener noreferrer";
+}
 
 measureButtons.forEach((button) => {
   button.addEventListener("click", () => {
@@ -28,12 +60,42 @@ measureButtons.forEach((button) => {
     selectedUse.textContent = `${button.dataset.use}. Confirma esta referencia con los planos del proyecto.`;
     selectedUnits.textContent = button.dataset.units;
     selectedWeight.textContent = button.dataset.weight;
-    selectedQuote.href = buildQuoteUrl(measure);
+    selectedUnitPrice.textContent = formatPrice(button.dataset.unitPrice, 2);
+    selectedHundredPrice.textContent = formatPrice(button.dataset.hundredPrice);
+    selectedThousandPrice.textContent = formatPrice(button.dataset.thousandPrice);
+    selectedPrices.hidden = false;
+    activeSelection = {
+      measure,
+      unitPrice: button.dataset.unitPrice,
+      hundredPrice: button.dataset.hundredPrice,
+      thousandPrice: button.dataset.thousandPrice,
+    };
+    activeTier = "Millar";
+    priceTierButtons.forEach((item) => {
+      const selected = item.dataset.priceTier === activeTier;
+      item.classList.toggle("is-selected", selected);
+      item.setAttribute("aria-pressed", String(selected));
+    });
+    updateSelectedQuote();
     selectedQuote.target = "_blank";
     selectedQuote.rel = "noopener noreferrer";
     selectedQuote.removeAttribute("aria-disabled");
   });
 });
+
+priceTierButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    activeTier = button.dataset.priceTier;
+    priceTierButtons.forEach((item) => {
+      const selected = item === button;
+      item.classList.toggle("is-selected", selected);
+      item.setAttribute("aria-pressed", String(selected));
+    });
+    updateSelectedQuote();
+  });
+});
+
+measureButtons[0]?.click();
 
 selectedQuote?.addEventListener("click", (event) => {
   if (selectedQuote.getAttribute("aria-disabled") === "true") event.preventDefault();

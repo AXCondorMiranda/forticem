@@ -89,20 +89,38 @@
 .measure-grid strong { font-family: var(--font-display); font-size: clamp(2rem, 3vw, 3.2rem); line-height: 0.85; }
 .measure-grid button > span { margin-left: 0.3rem; color: var(--color-turquoise-hover); font-family: var(--font-display); font-size: 0.75rem; font-weight: 700; }
 .measure-grid small { grid-column: 1 / -1; align-self: end; margin-top: 1.2rem; color: var(--color-graphite); line-height: 1.4; }
+.measure-grid small b { color: var(--color-turquoise-hover); font-family: var(--font-display); font-weight: 800; }
 .measure-grid button:hover small,
 .measure-grid button:focus-visible small,
 .measure-grid button.is-selected small { color: rgb(255 255 255 / 65%); }
-.measure-selection { display: grid; grid-template-columns: 0.65fr 1.1fr auto auto; align-items: center; gap: 1.5rem; margin-top: 1.5rem; padding: 1.5rem; border: 1px solid var(--color-concrete-300); background: var(--color-white); }
+.measure-grid button:hover small b,
+.measure-grid button:focus-visible small b,
+.measure-grid button.is-selected small b { color: var(--color-turquoise); }
+.measure-selection { display: grid; grid-template-columns: 0.65fr 1.1fr auto; grid-template-areas: "choice use packing" "prices prices quote"; align-items: center; gap: 1.5rem; margin-top: 1.5rem; padding: 1.5rem; border: 1px solid var(--color-concrete-300); background: var(--color-white); }
 .measure-selection > div { display: grid; gap: 0.25rem; }
+.measure-selection > div:first-child { grid-area: choice; }
 .measure-selection span { color: var(--color-graphite); font-size: 0.65rem; letter-spacing: 0.07em; text-transform: uppercase; }
 .measure-selection strong { font-family: var(--font-display); font-size: 1.35rem; }
-.measure-selection p { margin: 0; color: var(--color-graphite); line-height: 1.5; }
-.measure-selection__packing { display: flex; gap: 1.25rem; margin: 0; }
+.measure-selection > p { grid-area: use; margin: 0; color: var(--color-graphite); line-height: 1.5; }
+.measure-selection__packing { grid-area: packing; display: flex; gap: 1.25rem; margin: 0; }
 .measure-selection__packing div { display: grid; gap: 0.2rem; }
 .measure-selection__packing dt { color: var(--color-graphite); font-size: 0.58rem; letter-spacing: 0.06em; text-transform: uppercase; }
 .measure-selection__packing dd { margin: 0; font-family: var(--font-display); font-size: 0.95rem; font-weight: 800; white-space: nowrap; }
-.measure-selection a { padding: 1rem 1.2rem; border-radius: 0.65rem; color: var(--color-navy); background: var(--color-turquoise); font-family: var(--font-display); font-size: 0.72rem; font-weight: 800; text-transform: uppercase; }
+.measure-selection__prices { grid-area: prices; grid-template-columns: repeat(3, minmax(8rem, 1fr)); gap: 0.5rem !important; }
+.measure-selection__prices[hidden] { display: none; }
+.measure-selection__prices button { display: grid; gap: 0.3rem; padding: 0.85rem 1rem; border: 1px solid var(--color-concrete-300); border-radius: 0.55rem; color: var(--color-navy); background: var(--color-concrete-50); cursor: pointer; text-align: left; transition: border-color 160ms ease, background 160ms ease; }
+.measure-selection__prices button:hover,
+.measure-selection__prices button:focus-visible { border-color: var(--color-turquoise-hover); }
+.measure-selection__prices button.is-selected { border-color: var(--color-navy); color: var(--color-white); background: var(--color-navy); }
+.measure-selection__prices button.is-selected span { color: rgb(255 255 255 / 62%); }
+.measure-selection__prices strong { font-size: 1rem; }
+.measure-selection > a { grid-area: quote; padding: 1rem 1.2rem; border-radius: 0.65rem; color: var(--color-navy); background: var(--color-turquoise); font-family: var(--font-display); font-size: 0.72rem; font-weight: 800; text-transform: uppercase; text-align: center; }
 .measure-selection a[aria-disabled="true"] { opacity: 0.4; pointer-events: none; }
+.separator-volume-callout { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 1.4rem; margin-top: 1rem; padding: 1.25rem 1.5rem; border-radius: 0.7rem; color: var(--color-white); background: var(--color-navy-soft); }
+.separator-volume-callout > span { color: var(--color-turquoise); font: 800 0.65rem var(--font-display); letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; }
+.separator-volume-callout p { margin: 0; color: rgb(255 255 255 / 65%); font-size: 0.85rem; line-height: 1.5; }
+.separator-volume-callout p strong { color: var(--color-white); }
+.separator-volume-callout a { color: var(--color-turquoise); font: 800 0.7rem var(--font-display); text-transform: uppercase; white-space: nowrap; }
 .separator-technical-note { margin: 1rem 0 0; color: var(--color-graphite); font-size: 0.75rem; line-height: 1.55; }
 
 .separator-process { padding-block: clamp(5rem, 9vw, 9rem); color: var(--color-white); background: var(--color-navy-soft); }
@@ -160,8 +178,7 @@
   .separator-hero__grid { grid-template-columns: 1fr 0.9fr; }
   .separator-performance__grid { grid-template-columns: 1fr; }
   .measure-grid { grid-template-columns: repeat(3, 1fr); }
-  .measure-selection { grid-template-columns: 0.7fr 1.3fr; }
-  .measure-selection > a { grid-column: 1 / -1; text-align: center; }
+  .measure-selection { grid-template-columns: 0.7fr 1.3fr; grid-template-areas: "choice use" "packing packing" "prices prices" "quote quote"; }
 }
 
 @media (max-width: 48rem) {
@@ -181,9 +198,11 @@
   .separator-section-heading { grid-template-columns: 1fr; gap: 1.2rem; }
   .measure-grid { grid-template-columns: repeat(2, 1fr); }
   .measure-grid button { min-height: 9.5rem; }
-  .measure-selection { grid-template-columns: 1fr; gap: 1rem; }
+  .measure-selection { grid-template-columns: 1fr; grid-template-areas: "choice" "use" "packing" "prices" "quote"; gap: 1rem; }
   .measure-selection__packing { justify-content: space-between; }
+  .measure-selection__prices { grid-template-columns: 1fr; }
   .measure-selection a { text-align: center; }
+  .separator-volume-callout { grid-template-columns: 1fr; gap: 0.65rem; }
   .separator-process__steps { grid-template-columns: 1fr; }
   .separator-process__steps li { min-height: 11rem; border-bottom: 1px solid rgb(255 255 255 / 14%); border-left: 1px solid rgb(255 255 255 / 14%); }
   .separator-process__steps strong { margin-top: 2rem; }
@@ -195,6 +214,8 @@
 }
 
 @media (max-width: 30rem) {
+  .separator-page .whatsapp-quick-quote { min-height: auto; padding: 0.45rem; }
+  .separator-page .whatsapp-quick-quote__copy { display: none; }
   .separator-gallery__grid { gap: .6rem; }
   .separator-gallery__filters button { padding: .55rem .75rem; font-size: .7rem; }
   .separator-gallery__card-info small { font-size: .55rem; }
