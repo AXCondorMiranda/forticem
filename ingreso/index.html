@@ -11,8 +11,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="portal.css?v=20261020-1" />
-    <script type="module" src="portal.js?v=20261020-1"></script>
+    <link rel="stylesheet" href="portal.css?v=20261020-2" />
+    <script type="module" src="portal.js?v=20261020-2"></script>
   </head>
   <body>
     <header class="portal-header">
@@ -73,6 +73,9 @@
             <button type="button" data-tab="demolding">
               <span>02</span><strong>Desmolde</strong><i aria-hidden="true">→</i>
             </button>
+            <button type="button" data-tab="dispatch">
+              <span>03</span><strong>Despacho</strong><i aria-hidden="true">→</i>
+            </button>
           </nav>
 
           <a class="back-link" href="../">Volver al sitio FORTICEM <span aria-hidden="true">↗</span></a>
@@ -124,9 +127,27 @@
             </section>
           </section>
 
+          <section class="operation-panel dispatch-panel" data-panel="dispatch" hidden>
+            <header class="operation-heading dispatch-heading">
+              <div><span>Pedidos visibles</span><h2>Despacho</h2></div>
+              <button class="refresh-button" type="button" data-refresh-orders>Actualizar</button>
+            </header>
+
+            <div class="dispatch-controls">
+              <label class="date-field"><span>Fecha de entrega</span><input type="date" data-orders-date /></label>
+              <label class="dispatch-search"><span>Buscar</span><input type="search" data-orders-search placeholder="Pedido, cliente, producto o código" /></label>
+              <label><span>Estado</span><select data-orders-status><option value="">Todos</option><option value="pending">Pendiente</option><option value="confirmed">Confirmado</option><option value="preparing">En preparación</option><option value="ready_for_dispatch">Listo para despacho</option><option value="mobility_assigned">Movilidad asignada</option><option value="on_the_way">En camino</option><option value="delivered">Entregado</option><option value="cancelled">Cancelado</option></select></label>
+              <button class="secondary-button" type="button" data-orders-all>Ver todas las fechas</button>
+            </div>
+
+            <div class="dispatch-summary" data-orders-summary></div>
+            <p class="form-message" data-orders-message role="alert" hidden></p>
+            <div class="orders-list" data-orders-list></div>
+          </section>
+
           <section class="empty-permissions" data-no-permissions hidden>
             <span>Sin permisos operativos</span>
-            <h2>Tu cuenta aún no tiene acceso a Producción o Desmolde.</h2>
+            <h2>Tu cuenta aún no tiene acceso a Producción, Desmolde o Despacho.</h2>
             <p>Solicita a un administrador que habilite los permisos correspondientes.</p>
           </section>
         </div>
@@ -134,5 +155,15 @@
     </main>
 
     <div class="toast" data-toast role="status" aria-live="polite" hidden></div>
+
+    <dialog class="order-dialog" data-order-dialog>
+      <div class="order-dialog__shell">
+        <header class="order-dialog__header">
+          <div><span>Detalle operativo</span><h2 data-order-dialog-title>Pedido</h2></div>
+          <button type="button" data-close-order-dialog aria-label="Cerrar detalle">×</button>
+        </header>
+        <div class="order-dialog__content" data-order-detail></div>
+      </div>
+    </dialog>
   </body>
 </html>

@@ -33,6 +33,16 @@ const dom = {
   demoldingSave: document.querySelector("[data-demolding-save]"),
   demoldingRecords: document.querySelector("[data-demolding-records]"),
   overrideField: document.querySelector("[data-override-field]"),
+  ordersDate: document.querySelector("[data-orders-date]"),
+  ordersSearch: document.querySelector("[data-orders-search]"),
+  ordersStatus: document.querySelector("[data-orders-status]"),
+  ordersAll: document.querySelector("[data-orders-all]"),
+  ordersSummary: document.querySelector("[data-orders-summary]"),
+  ordersMessage: document.querySelector("[data-orders-message]"),
+  ordersList: document.querySelector("[data-orders-list]"),
+  orderDialog: document.querySelector("[data-order-dialog]"),
+  orderDialogTitle: document.querySelector("[data-order-dialog-title]"),
+  orderDetail: document.querySelector("[data-order-detail]"),
   toast: document.querySelector("[data-toast]"),
 };
 
@@ -41,6 +51,10 @@ const state = {
   profile: null,
   products: [],
   balances: new Map(),
+  orders: [],
+  ordersShowAll: false,
+  selectedOrderId: null,
+  ordersChannel: null,
   activeTab: null,
 };
 
@@ -50,6 +64,18 @@ const permission = (name) =>
 
 const canUseProduction = () => permission("view_production") || permission("record_production");
 const canUseDemolding = () => permission("view_demolding") || permission("record_demolding");
+const canUseDispatch = () => permission("view_orders");
+
+const orderStatuses = {
+  pending: "Pendiente",
+  confirmed: "Confirmado",
+  preparing: "En preparación",
+  ready_for_dispatch: "Listo para despacho",
+  mobility_assigned: "Movilidad asignada",
+  on_the_way: "En camino",
+  delivered: "Entregado",
+  cancelled: "Cancelado",
+};
 
 function localDateValue() {
   const now = new Date();
@@ -97,9 +123,14 @@ function setBusy(button, busy, busyLabel) {
 }
 
 function showLogin(message = "") {
+  if (state.ordersChannel) {
+    supabase.removeChannel(state.ordersChannel);
+    state.ordersChannel = null;
+  }
   state.session = null;
   state.profile = null;
   state.products = [];
+  state.orders = [];
   dom.authView.hidden = false;
   dom.appView.hidden = true;
   dom.logout.hidden = true;
@@ -172,14 +203,24 @@ function setActiveTab(tabName) {
 function configureWorkspace() {
   const productionTab = dom.tabs.find((item) => item.dataset.tab === "production");
   const demoldingTab = dom.tabs.find((item) => item.dataset.tab === "demolding");
+  const dispatchTab = dom.tabs.find((item) => item.dataset.tab === "dispatch");
   productionTab.hidden = !canUseProduction();
   demoldingTab.hidden = !canUseDemolding();
-  dom.noPermissions.hidden = canUseProduction() || canUseDemolding();
+  dispatchTab.hidden = !canUseDispatch();
+  dom.noPermissions.hidden = canUseProduction() || canUseDemolding() || canUseDispatch();
   dom.productionSave.hidden = !permission("record_production");
   dom.demoldingSave.hidden = !permission("record_demolding");
   dom.overrideField.hidden = state.profile.role !== "administrator";
 
-  const initialTab = canUseProduction() ? "production" : canUseDemolding() ? "demolding" : null;
+  const initialTab = canUseDispatch() && state.profile.role === "dispatch"
+    ? "dispatch"
+    : canUseProduction()
+      ? "production"
+      : canUseDemolding()
+        ? "demolding"
+        : canUseDispatch()
+          ? "dispatch"
+          : null;
   dom.panels.forEach((panel) => { panel.hidden = true; });
   if (initialTab) setActiveTab(initialTab);
 }
@@ -258,6 +299,366 @@ async function loadRecords(kind) {
   renderRecords(target, data || [], dateField);
 }
 
+function relationObject(value) {
+  return Array.isArray(value) ? value[0] || {} : value || {};
+}
+
+function normalizeOrder(row) {
+  const client = relationObject(row.clients);
+  const address = relationObject(row.client_addresses);
+  return {
+    ...row,
+    client_name: client.name || "Cliente",
+    client_phone: client.phone || "",
+    district: address.city || "",
+    address_line: address.address_line || "",
+    order_items: (row.order_items || []).map((line) => ({
+      ...line,
+      order_item_codes: [...(line.order_item_codes || [])].sort((left, right) => left.code.localeCompare(right.code)),
+    })),
+  };
+}
+
+function dateFromTimestamp(value) {
+  const date = new Date(value);
+  const offset = date.getTimezoneOffset() * 60000;
+  return new Date(date.getTime() - offset).toISOString().slice(0, 10);
+}
+
+function scheduledDate(order) {
+  return order.requested_date || dateFromTimestamp(order.created_at);
+}
+
+function orderIsOverdue(order) {
+  return ["pending", "confirmed", "preparing"].includes(order.status) && scheduledDate(order) < localDateValue();
+}
+
+function orderWeight(order) {
+  return order.order_items.reduce((total, line) => total + Number(line.quantity || 0) * Number(line.unit_weight_kg || 0), 0);
+}
+
+function formatDate(value) {
+  return new Intl.DateTimeFormat("es-PE", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "UTC" }).format(new Date(`${value}T00:00:00Z`));
+}
+
+function visibleOrders() {
+  const query = dom.ordersSearch.value.trim().toLowerCase();
+  const status = dom.ordersStatus.value;
+  const selectedDate = dom.ordersDate.value;
+  const today = localDateValue();
+  return state.orders
+    .filter((order) => {
+      if (!state.ordersShowAll) {
+        const scheduledForDate = scheduledDate(order) === selectedDate;
+        const carriedIntoToday = selectedDate === today && orderIsOverdue(order);
+        if (!scheduledForDate && !carriedIntoToday) return false;
+      }
+      if (status && order.status !== status) return false;
+      if (!query) return true;
+      const searchable = [
+        order.order_number,
+        order.client_name,
+        order.client_phone,
+        order.district,
+        order.address_line,
+        order.registered_by_name,
+        order.registered_by_email,
+        ...order.order_items.map((line) => line.product_name),
+        ...order.order_items.flatMap((line) => line.order_item_codes.map((code) => code.code)),
+      ].filter(Boolean).join(" ").toLowerCase();
+      return searchable.includes(query);
+    })
+    .sort((left, right) => {
+      if (orderIsOverdue(left) !== orderIsOverdue(right)) return orderIsOverdue(left) ? -1 : 1;
+      return scheduledDate(left).localeCompare(scheduledDate(right)) || new Date(right.created_at) - new Date(left.created_at);
+    });
+}
+
+function statusChip(status) {
+  const chip = document.createElement("span");
+  chip.className = "status-chip";
+  chip.dataset.status = status;
+  chip.textContent = orderStatuses[status] || status;
+  return chip;
+}
+
+function nextDispatchAction(order) {
+  if (!permission("update_order_status")) return null;
+  if (order.status === "confirmed") return { status: "preparing", label: "Iniciar preparación" };
+  if (order.status === "preparing") return { status: "ready_for_dispatch", label: "Marcar pedido listo" };
+  if (order.status === "ready_for_dispatch") return { status: "delivered", label: "Marcar como entregado" };
+  return null;
+}
+
+async function transitionOrder(order, action, button) {
+  const nextLabel = orderStatuses[action.status] || action.status;
+  if (!window.confirm(`¿Actualizar ${order.order_number} a “${nextLabel}”?`)) return;
+  button.disabled = true;
+  try {
+    const { error } = await supabase.rpc("transition_order", {
+      p_order_id: order.id,
+      p_next_status: action.status,
+      p_comment: null,
+    });
+    if (error) throw error;
+    showToast(`${order.order_number}: ${nextLabel}.`);
+    await fetchOrders();
+  } catch (error) {
+    showToast(errorLabel(error), true);
+    button.disabled = false;
+  }
+}
+
+function renderOrders() {
+  const orders = visibleOrders();
+  dom.ordersList.replaceChildren();
+  dom.ordersSummary.replaceChildren();
+
+  const counts = [
+    ["Visibles", orders.length],
+    ["En preparación", orders.filter((item) => item.status === "preparing").length],
+    ["Listos", orders.filter((item) => item.status === "ready_for_dispatch").length],
+    ["Atrasados", orders.filter(orderIsOverdue).length],
+  ];
+  counts.forEach(([label, value]) => {
+    const chip = document.createElement("span");
+    chip.className = "summary-chip";
+    chip.append(`${label}: `);
+    const strong = document.createElement("strong");
+    strong.textContent = value;
+    chip.append(strong);
+    dom.ordersSummary.append(chip);
+  });
+
+  if (!orders.length) {
+    const empty = document.createElement("p");
+    empty.className = "records-empty";
+    empty.textContent = state.ordersShowAll
+      ? "No hay pedidos que coincidan con los filtros."
+      : "No hay pedidos para esta fecha. Los atrasados aparecerán automáticamente en el día de hoy.";
+    dom.ordersList.append(empty);
+    return;
+  }
+
+  orders.forEach((order) => {
+    const card = document.createElement("article");
+    card.className = `order-card${orderIsOverdue(order) ? " is-overdue" : ""}`;
+    const content = document.createElement("div");
+    const top = document.createElement("div");
+    top.className = "order-card__top";
+    const number = document.createElement("span");
+    number.className = "order-card__number";
+    number.textContent = order.order_number;
+    top.append(number, statusChip(order.status));
+    const title = document.createElement("h3");
+    title.textContent = order.client_name;
+    const meta = document.createElement("p");
+    meta.className = "order-card__meta";
+    [order.district, `Entrega: ${formatDate(scheduledDate(order))}`, `${numberLabel(orderWeight(order))} kg`, order.registered_by_name ? `Encargado: ${order.registered_by_name}` : ""]
+      .filter(Boolean)
+      .forEach((value) => {
+        const span = document.createElement("span");
+        span.textContent = value;
+        meta.append(span);
+      });
+    const products = document.createElement("p");
+    products.className = "order-card__products";
+    products.textContent = order.order_items.map((line) => `${line.product_name}: ${numberLabel(line.quantity)} ${line.unit}`).join(" · ");
+    content.append(top, title, meta, products);
+    if (orderIsOverdue(order)) {
+      const alert = document.createElement("span");
+      alert.className = "order-card__alert";
+      alert.textContent = `Urgente: programado para ${formatDate(scheduledDate(order))}`;
+      content.append(alert);
+    }
+
+    const actions = document.createElement("div");
+    actions.className = "order-card__actions";
+    const detail = document.createElement("button");
+    detail.type = "button";
+    detail.className = "order-action order-action--secondary";
+    detail.textContent = "Ver detalle y códigos";
+    detail.addEventListener("click", () => openOrderDetail(order.id));
+    actions.append(detail);
+    const next = nextDispatchAction(order);
+    if (next) {
+      const advance = document.createElement("button");
+      advance.type = "button";
+      advance.className = "order-action";
+      advance.textContent = next.label;
+      advance.addEventListener("click", () => transitionOrder(order, next, advance));
+      actions.prepend(advance);
+    }
+    card.append(content, actions);
+    dom.ordersList.append(card);
+  });
+}
+
+async function fetchOrders() {
+  if (!canUseDispatch()) return;
+  dom.ordersList.innerHTML = '<div class="loading-line" aria-label="Cargando pedidos"></div>';
+  setMessage(dom.ordersMessage);
+  const { data, error } = await supabase
+    .from("orders")
+    .select("id, order_number, status, total, created_at, requested_date, notes, registered_by_name, registered_by_email, clients(name, phone), client_addresses(city, address_line), order_items(id, product_name, quantity, unit, unit_weight_kg, order_item_codes(id, code))")
+    .order("created_at", { ascending: false })
+    .limit(500);
+  if (error) {
+    setMessage(dom.ordersMessage, errorLabel(error));
+    dom.ordersList.replaceChildren();
+    return;
+  }
+  state.orders = (data || []).map(normalizeOrder);
+  renderOrders();
+}
+
+function subscribeToOrders() {
+  if (!canUseDispatch() || state.ordersChannel) return;
+  state.ordersChannel = supabase
+    .channel(`portal-orders-${state.session.user.id}`)
+    .on("postgres_changes", { event: "*", schema: "public", table: "orders" }, () => fetchOrders())
+    .subscribe();
+}
+
+function detailBlock(label, title, lines = [], wide = false) {
+  const block = document.createElement("section");
+  block.className = `detail-block${wide ? " detail-block--wide" : ""}`;
+  const eyebrow = document.createElement("span");
+  eyebrow.textContent = label;
+  const heading = document.createElement("h3");
+  heading.textContent = title;
+  block.append(eyebrow, heading);
+  lines.filter(Boolean).forEach((value) => {
+    const paragraph = document.createElement("p");
+    paragraph.textContent = value;
+    block.append(paragraph);
+  });
+  return block;
+}
+
+async function saveCodes(order, line, input, button) {
+  const codes = input.value
+    .split(/[\s,;]+/)
+    .map((value) => value.trim().toUpperCase())
+    .filter((value) => value.length >= 2);
+  if (!codes.length) return showToast("Ingresa al menos un código válido.", true);
+  button.disabled = true;
+  try {
+    const { data, error } = await supabase.rpc("add_order_item_codes", {
+      p_order_item_id: line.id,
+      p_codes: codes,
+    });
+    if (error) throw error;
+    if (data?.duplicates?.length) {
+      showToast(`No se guardó ningún código. Repetidos: ${data.duplicates.join(", ")}`, true);
+      button.disabled = false;
+      return;
+    }
+    showToast(`${data?.inserted || codes.length} código${(data?.inserted || codes.length) === 1 ? "" : "s"} guardado${(data?.inserted || codes.length) === 1 ? "" : "s"}.`);
+    await fetchOrders();
+    openOrderDetail(order.id, true);
+  } catch (error) {
+    showToast(errorLabel(error), true);
+    button.disabled = false;
+  }
+}
+
+async function removeCode(order, code) {
+  if (!window.confirm(`¿Eliminar el código ${code.code}?`)) return;
+  try {
+    const { error } = await supabase.rpc("remove_order_item_code", { p_code_id: code.id });
+    if (error) throw error;
+    showToast(`Código ${code.code} eliminado.`);
+    await fetchOrders();
+    openOrderDetail(order.id, true);
+  } catch (error) {
+    showToast(errorLabel(error), true);
+  }
+}
+
+function renderOrderDetail(order) {
+  dom.orderDialogTitle.textContent = `${order.order_number} · ${orderStatuses[order.status] || order.status}`;
+  dom.orderDetail.replaceChildren();
+  const grid = document.createElement("div");
+  grid.className = "order-detail-grid";
+  grid.append(
+    detailBlock("Cliente y destino", order.client_name, [order.client_phone, order.district, order.address_line, `Entrega: ${formatDate(scheduledDate(order))}`]),
+    detailBlock("Responsable", order.registered_by_name || "Usuario", [order.registered_by_email, `Peso total: ${numberLabel(orderWeight(order))} kg`]),
+  );
+  if (order.notes?.trim()) grid.append(detailBlock("Observaciones", "Notas del pedido", [order.notes.trim()], true));
+
+  const products = detailBlock("Trazabilidad", "Productos y códigos", [], true);
+  order.order_items.forEach((line) => {
+    const item = document.createElement("article");
+    item.className = "order-line";
+    const heading = document.createElement("div");
+    heading.className = "order-line__heading";
+    const name = document.createElement("strong");
+    name.textContent = line.product_name;
+    const quantity = document.createElement("span");
+    quantity.textContent = `${numberLabel(line.quantity)} ${line.unit} · ${numberLabel(Number(line.quantity) * Number(line.unit_weight_kg || 0))} kg`;
+    heading.append(name, quantity);
+    item.append(heading);
+
+    const codes = document.createElement("div");
+    codes.className = "codes-list";
+    if (!line.order_item_codes.length) {
+      const empty = document.createElement("span");
+      empty.className = "codes-empty";
+      empty.textContent = "Sin códigos registrados.";
+      codes.append(empty);
+    } else {
+      line.order_item_codes.forEach((code) => {
+        const chip = document.createElement("span");
+        chip.className = "code-chip";
+        chip.append(code.code);
+        if (permission("manage_order_codes") && ["confirmed", "preparing", "ready_for_dispatch", "delivered"].includes(order.status)) {
+          const remove = document.createElement("button");
+          remove.type = "button";
+          remove.title = `Eliminar ${code.code}`;
+          remove.textContent = "×";
+          remove.addEventListener("click", () => removeCode(order, code));
+          chip.append(remove);
+        }
+        codes.append(chip);
+      });
+    }
+    item.append(codes);
+
+    if (permission("manage_order_codes") && ["confirmed", "preparing", "ready_for_dispatch", "delivered"].includes(order.status)) {
+      const form = document.createElement("form");
+      form.className = "codes-form";
+      const label = document.createElement("label");
+      const labelText = document.createElement("span");
+      labelText.textContent = "Añadir códigos";
+      const input = document.createElement("input");
+      input.placeholder = "4104M, 5610M, 8199A";
+      input.autocomplete = "off";
+      label.append(labelText, input);
+      const save = document.createElement("button");
+      save.type = "submit";
+      save.textContent = "Guardar códigos";
+      form.append(label, save);
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        saveCodes(order, line, input, save);
+      });
+      item.append(form);
+    }
+    products.append(item);
+  });
+  grid.append(products);
+  dom.orderDetail.append(grid);
+}
+
+function openOrderDetail(orderId, alreadyOpen = false) {
+  const order = state.orders.find((item) => item.id === orderId);
+  if (!order) return showToast("El pedido ya no está disponible.", true);
+  state.selectedOrderId = orderId;
+  renderOrderDetail(order);
+  if (!alreadyOpen && !dom.orderDialog.open) dom.orderDialog.showModal();
+}
+
 async function openSession(session) {
   state.session = session;
   const { data: profile, error } = await supabase
@@ -279,12 +680,14 @@ async function openSession(session) {
   dom.appView.hidden = false;
   dom.logout.hidden = false;
   configureWorkspace();
+  subscribeToOrders();
 
   try {
-    await fetchProducts();
+    if (canUseProduction() || canUseDemolding()) await fetchProducts();
     await Promise.all([
       canUseProduction() ? loadRecords("production") : Promise.resolve(),
       canUseDemolding() ? fetchBalances().then(() => loadRecords("demolding")) : Promise.resolve(),
+      canUseDispatch() ? fetchOrders() : Promise.resolve(),
     ]);
   } catch (loadError) {
     showToast(errorLabel(loadError), true);
@@ -312,6 +715,7 @@ dom.loginForm.addEventListener("submit", async (event) => {
 
 dom.logout.addEventListener("click", async () => {
   dom.logout.disabled = true;
+  if (dom.orderDialog.open) dom.orderDialog.close();
   await supabase.auth.signOut({ scope: "local" });
   dom.loginForm.reset();
   showLogin();
@@ -397,6 +801,23 @@ dom.productionDate.addEventListener("change", () => loadRecords("production"));
 dom.demoldingDate.addEventListener("change", () => loadRecords("demolding"));
 document.querySelector("[data-refresh-production]").addEventListener("click", () => loadRecords("production"));
 document.querySelector("[data-refresh-demolding]").addEventListener("click", async () => { await fetchBalances(); await loadRecords("demolding"); });
+document.querySelector("[data-refresh-orders]").addEventListener("click", () => fetchOrders());
+dom.ordersDate.addEventListener("change", () => {
+  state.ordersShowAll = false;
+  dom.ordersAll.textContent = "Ver todas las fechas";
+  renderOrders();
+});
+dom.ordersSearch.addEventListener("input", renderOrders);
+dom.ordersStatus.addEventListener("change", renderOrders);
+dom.ordersAll.addEventListener("click", () => {
+  state.ordersShowAll = !state.ordersShowAll;
+  dom.ordersAll.textContent = state.ordersShowAll ? "Filtrar por fecha" : "Ver todas las fechas";
+  renderOrders();
+});
+document.querySelector("[data-close-order-dialog]").addEventListener("click", () => dom.orderDialog.close());
+dom.orderDialog.addEventListener("click", (event) => {
+  if (event.target === dom.orderDialog) dom.orderDialog.close();
+});
 
 function updateConnection() {
   const online = navigator.onLine;
@@ -409,6 +830,7 @@ updateConnection();
 
 dom.productionDate.value = localDateValue();
 dom.demoldingDate.value = localDateValue();
+dom.ordersDate.value = localDateValue();
 
 supabase.auth.onAuthStateChange((event) => {
   if (event === "SIGNED_OUT" && !dom.authView.hidden) return;
