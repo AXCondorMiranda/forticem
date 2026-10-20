@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex,nofollow,noarchive" />
+    <meta name="theme-color" content="#06172f" />
+    <title>Ingreso | Operaciones FORTICEM</title>
+    <meta name="description" content="Portal interno de operaciones FORTICEM." />
+    <link rel="icon" href="../assets/brand/forticem-symbol-light.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="portal.css?v=20261020-1" />
+    <script type="module" src="portal.js?v=20261020-1"></script>
+  </head>
+  <body>
+    <header class="portal-header">
+      <a class="portal-brand" href="../" aria-label="FORTICEM, volver al sitio web">
+        <img src="../assets/brand/forticem-symbol-light.svg" width="34" height="40" alt="" />
+        <span><strong>FORTICEM</strong><small>Operaciones</small></span>
+      </a>
+      <div class="portal-header__actions">
+        <span class="connection-status" data-connection><i aria-hidden="true"></i> En línea</span>
+        <button class="text-button" type="button" data-logout hidden>Cerrar sesión</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="login-view" data-auth-view>
+        <div class="login-intro">
+          <span class="index-label">PORTAL INTERNO / 01</span>
+          <h1>Ingreso.</h1>
+          <p>Registra la producción y el desmolde desde cualquier iPhone o computadora.</p>
+          <dl class="login-notes">
+            <div><dt>01</dt><dd>Usa el correo y contraseña asignados por FORTICEM.</dd></div>
+            <div><dt>02</dt><dd>Verás únicamente las funciones autorizadas para tu cuenta.</dd></div>
+          </dl>
+        </div>
+
+        <form class="login-card" data-login-form>
+          <div class="form-heading">
+            <span>Cuenta de trabajador</span>
+            <h2>Iniciar sesión</h2>
+          </div>
+          <label>
+            <span>Correo</span>
+            <input type="email" name="email" autocomplete="email" inputmode="email" required placeholder="nombre@forticem.com" />
+          </label>
+          <label>
+            <span>Contraseña</span>
+            <input type="password" name="password" autocomplete="current-password" required placeholder="••••••••" />
+          </label>
+          <p class="form-message" data-login-message role="alert" hidden></p>
+          <button class="primary-button" type="submit" data-login-button>
+            <span>Ingresar</span><span aria-hidden="true">↗</span>
+          </button>
+          <p class="privacy-note">Acceso exclusivo para personal autorizado.</p>
+        </form>
+      </section>
+
+      <section class="workspace" data-app-view hidden>
+        <aside class="workspace-intro">
+          <span class="index-label">OPERACIONES / HOY</span>
+          <p class="workspace-greeting">Hola,</p>
+          <h1 data-user-name>Trabajador</h1>
+          <p data-user-role></p>
+
+          <nav class="operation-tabs" aria-label="Operaciones disponibles" data-tabs>
+            <button type="button" data-tab="production">
+              <span>01</span><strong>Producción</strong><i aria-hidden="true">→</i>
+            </button>
+            <button type="button" data-tab="demolding">
+              <span>02</span><strong>Desmolde</strong><i aria-hidden="true">→</i>
+            </button>
+          </nav>
+
+          <a class="back-link" href="../">Volver al sitio FORTICEM <span aria-hidden="true">↗</span></a>
+        </aside>
+
+        <div class="operation-area">
+          <section class="operation-panel" data-panel="production" hidden>
+            <header class="operation-heading">
+              <div><span>Registro diario</span><h2>Producción</h2></div>
+              <label class="date-field"><span>Fecha</span><input type="date" data-production-date /></label>
+            </header>
+
+            <form data-production-form>
+              <div class="product-grid" data-production-products></div>
+              <div class="form-extras">
+                <label><span>Código de lote <small>Opcional</small></span><input name="batchCode" autocomplete="off" placeholder="Ej. L-2010-A" /></label>
+                <label><span>Observaciones <small>Opcional</small></span><textarea name="notes" rows="2" placeholder="Añadir una nota breve"></textarea></label>
+              </div>
+              <p class="form-message" data-production-message role="alert" hidden></p>
+              <button class="primary-button" type="submit" data-production-save><span>Guardar producción</span><span aria-hidden="true">↗</span></button>
+            </form>
+
+            <section class="daily-records" aria-labelledby="production-records-title">
+              <header><div><span>Movimientos del día</span><h3 id="production-records-title">Producción registrada</h3></div><button type="button" data-refresh-production aria-label="Actualizar producción">Actualizar</button></header>
+              <div data-production-records></div>
+            </section>
+          </section>
+
+          <section class="operation-panel" data-panel="demolding" hidden>
+            <header class="operation-heading">
+              <div><span>Registro diario</span><h2>Desmolde</h2></div>
+              <label class="date-field"><span>Fecha</span><input type="date" data-demolding-date /></label>
+            </header>
+
+            <form data-demolding-form>
+              <p class="balance-note">La cantidad disponible considera la producción registrada menos lo ya desmoldado.</p>
+              <div class="product-grid" data-demolding-products></div>
+              <div class="form-extras">
+                <label><span>Observaciones <small>Opcional</small></span><textarea name="notes" rows="2" placeholder="Añadir una nota breve"></textarea></label>
+                <label data-override-field hidden><span>Motivo de excepción <small>Solo administrador</small></span><input name="overrideReason" autocomplete="off" placeholder="Mínimo 5 caracteres" /></label>
+              </div>
+              <p class="form-message" data-demolding-message role="alert" hidden></p>
+              <button class="primary-button" type="submit" data-demolding-save><span>Guardar desmolde</span><span aria-hidden="true">↗</span></button>
+            </form>
+
+            <section class="daily-records" aria-labelledby="demolding-records-title">
+              <header><div><span>Movimientos del día</span><h3 id="demolding-records-title">Desmolde registrado</h3></div><button type="button" data-refresh-demolding aria-label="Actualizar desmolde">Actualizar</button></header>
+              <div data-demolding-records></div>
+            </section>
+          </section>
+
+          <section class="empty-permissions" data-no-permissions hidden>
+            <span>Sin permisos operativos</span>
+            <h2>Tu cuenta aún no tiene acceso a Producción o Desmolde.</h2>
+            <p>Solicita a un administrador que habilite los permisos correspondientes.</p>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <div class="toast" data-toast role="status" aria-live="polite" hidden></div>
+  </body>
+</html>

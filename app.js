@@ -79,6 +79,7 @@ const mobileNavigation = [
   { label: "Proyectos / Entregas", href: "#entregas" },
   { label: "Recursos", href: "#block-michi-tecnico" },
   { label: "Contacto", href: "#cotizacion" },
+  { label: "Ingreso", href: "/ingreso/", entry: true },
 ];
 
 const featuredProducts = [
@@ -273,7 +274,7 @@ mobileLinks.innerHTML = mobileNavigation
   .map((item, index) => {
     if (!item.children) {
       return `
-        <a class="mobile-nav__link${item.current ? " is-active" : ""}" href="${item.href}"
+        <a class="mobile-nav__link${item.current ? " is-active" : ""}${item.entry ? " is-entry" : ""}" href="${item.href}"
           ${item.current ? 'aria-current="page"' : ""}>${item.label}</a>
       `;
     }

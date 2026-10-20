@@ -23,6 +23,7 @@ if (legacyHeader) {
           <a class="nav-link" href="../../#entregas">Proyectos / Entregas</a>
           <a class="nav-link" href="../../#block-michi-tecnico">Recursos</a>
           <a class="nav-link" href="../../#cotizacion">Contacto</a>
+          <a class="nav-link nav-link--entry" href="/ingreso/">Ingreso</a>
         </nav>
         <a class="quote-cta quote-cta--desktop" href="../../#cotizacion">Solicitar cotización <span class="quote-cta__arrow" aria-hidden="true">↗</span></a>
         <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="product-mobile-navigation" aria-label="Abrir menú" data-product-toggle>
@@ -42,6 +43,7 @@ if (legacyHeader) {
           <a class="mobile-nav__link" href="../../#entregas">Proyectos / Entregas</a>
           <a class="mobile-nav__link" href="../../#block-michi-tecnico">Recursos</a>
           <a class="mobile-nav__link" href="../../#cotizacion">Contacto</a>
+          <a class="mobile-nav__link mobile-nav__link--entry" href="/ingreso/">Ingreso</a>
         </div>
         <div class="mobile-nav__footer"><a class="quote-cta quote-cta--mobile" href="../../#cotizacion">Solicitar cotización <span class="quote-cta__arrow" aria-hidden="true">↗</span></a><p>Prefabricados, aditivos y soluciones técnicas para construcción.</p></div>
       </nav>
