@@ -11,8 +11,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="portal.css?v=20261020-2" />
-    <script type="module" src="portal.js?v=20261020-2"></script>
+    <link rel="stylesheet" href="portal.css?v=20261021-3" />
+    <script type="module" src="portal.js?v=20261021-3"></script>
   </head>
   <body>
     <header class="portal-header">
@@ -75,6 +75,9 @@
             </button>
             <button type="button" data-tab="dispatch">
               <span>03</span><strong>Despacho</strong><i aria-hidden="true">→</i>
+            </button>
+            <button type="button" data-tab="users">
+              <span>04</span><strong>Usuarios</strong><i aria-hidden="true">→</i>
             </button>
           </nav>
 
@@ -145,9 +148,23 @@
             <div class="orders-list" data-orders-list></div>
           </section>
 
+          <section class="operation-panel users-panel" data-panel="users" hidden>
+            <header class="operation-heading users-heading">
+              <div><span>Administración segura</span><h2>Usuarios</h2></div>
+              <button class="refresh-button" type="button" data-refresh-users>Actualizar</button>
+            </header>
+
+            <div class="users-controls">
+              <label><span>Buscar usuario</span><input type="search" data-users-search placeholder="Nombre, correo o rol" /></label>
+            </div>
+            <p class="users-note">La nueva contraseña no se almacena ni se muestra. Al cambiarla se cerrarán las sesiones anteriores del usuario.</p>
+            <p class="form-message" data-users-message role="alert" hidden></p>
+            <div class="users-list" data-users-list></div>
+          </section>
+
           <section class="empty-permissions" data-no-permissions hidden>
             <span>Sin permisos operativos</span>
-            <h2>Tu cuenta aún no tiene acceso a Producción, Desmolde o Despacho.</h2>
+            <h2>Tu cuenta aún no tiene acceso a Producción, Desmolde, Despacho o Administración.</h2>
             <p>Solicita a un administrador que habilite los permisos correspondientes.</p>
           </section>
         </div>
@@ -163,6 +180,27 @@
           <button type="button" data-close-order-dialog aria-label="Cerrar detalle">×</button>
         </header>
         <div class="order-dialog__content" data-order-detail></div>
+      </div>
+    </dialog>
+
+    <dialog class="order-dialog password-dialog" data-password-dialog>
+      <div class="order-dialog__shell">
+        <header class="order-dialog__header">
+          <div><span>Seguridad de cuenta</span><h2>Cambiar contraseña</h2></div>
+          <button type="button" data-close-password-dialog aria-label="Cerrar">×</button>
+        </header>
+        <form class="order-dialog__content password-form" data-password-form>
+          <div class="password-user" data-password-user></div>
+          <input type="hidden" name="userId" />
+          <label><span>Nueva contraseña</span><input type="password" name="password" autocomplete="new-password" minlength="8" required placeholder="Mínimo 8 caracteres" /></label>
+          <label><span>Confirmar contraseña</span><input type="password" name="confirmation" autocomplete="new-password" minlength="8" required placeholder="Repite la contraseña" /></label>
+          <p class="password-hint">Usa al menos 8 caracteres. Evita nombres, fechas y contraseñas reutilizadas.</p>
+          <p class="form-message" data-password-message role="alert" hidden></p>
+          <div class="password-actions">
+            <button class="secondary-button" type="button" data-cancel-password>Cancelar</button>
+            <button class="primary-button" type="submit" data-password-save><span>Guardar contraseña</span><span aria-hidden="true">↗</span></button>
+          </div>
+        </form>
       </div>
     </dialog>
   </body>

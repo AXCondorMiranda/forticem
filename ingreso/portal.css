@@ -253,6 +253,28 @@ input::placeholder, textarea::placeholder { color: #9aa3a8; }
 .codes-form button { min-height: 2.8rem; padding: .6rem .75rem; border: 1px solid var(--navy); color: var(--white); background: var(--navy); font-size: .66rem; font-weight: 700; text-transform: uppercase; }
 .detail-loading { padding: 4rem 1rem; color: var(--muted); text-align: center; }
 
+.users-controls { max-width: 30rem; margin-bottom: 1rem; }
+.users-note { max-width: 48rem; margin: 0 0 1.5rem; color: var(--muted); font-size: .75rem; line-height: 1.55; }
+.users-list { display: grid; gap: .7rem; }
+.user-card { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 1rem; padding: 1rem 1.15rem; border: 1px solid var(--line); background: rgb(255 255 255 / 72%); }
+.user-card__identity { min-width: 0; }
+.user-card__identity strong { display: block; font-size: .88rem; }
+.user-card__identity small { display: block; margin-top: .25rem; overflow: hidden; color: var(--muted); font-size: .7rem; text-overflow: ellipsis; white-space: nowrap; }
+.user-card__meta { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .6rem; }
+.user-role, .user-status { padding: .28rem .48rem; border: 1px solid #aab6b5; color: #526068; background: var(--white); font: 500 .58rem "DM Mono", monospace; text-transform: uppercase; }
+.user-status.is-active { border-color: #70ac9f; color: #087865; background: #e4f8f2; }
+.user-status.is-inactive { border-color: #d49a96; color: #8f3732; background: #fff0ee; }
+.user-card__action { min-height: 2.7rem; padding: .65rem .8rem; border: 1px solid var(--navy); color: var(--navy); background: transparent; font-size: .66rem; font-weight: 700; text-transform: uppercase; }
+.user-card__action:hover { color: var(--white); background: var(--navy); }
+.password-form label + label { margin-top: 1.2rem; }
+.password-user { margin-bottom: 1.5rem; padding: .9rem 1rem; border-left: .2rem solid var(--mint); background: var(--white); }
+.password-user strong, .password-user small { display: block; }
+.password-user strong { font-size: .9rem; }
+.password-user small { margin-top: .25rem; color: var(--muted); font-size: .7rem; }
+.password-hint { margin: .9rem 0 0; color: var(--muted); font-size: .7rem; line-height: 1.5; }
+.password-actions { display: grid; grid-template-columns: auto minmax(14rem, 1fr); align-items: end; gap: .75rem; margin-top: 1.5rem; }
+.password-actions .primary-button { margin-top: 0; }
+
 .toast { position: fixed; right: 1rem; bottom: 1rem; z-index: 50; max-width: min(24rem, calc(100% - 2rem)); padding: 1rem 1.15rem; color: var(--white); background: var(--navy); box-shadow: var(--shadow); font-size: .76rem; line-height: 1.5; }
 .toast.is-error { background: #862b2b; }
 
@@ -267,7 +289,7 @@ input::placeholder, textarea::placeholder { color: #9aa3a8; }
   .workspace { grid-template-columns: 1fr; }
   .workspace-intro { padding: 2rem clamp(1.25rem, 5vw, 3rem) 0; }
   .workspace-greeting { margin-top: 2.5rem; }
-  .operation-tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 2.5rem; border-bottom: 1px solid rgb(255 255 255 / 18%); }
+  .operation-tabs { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 2.5rem; border-bottom: 1px solid rgb(255 255 255 / 18%); }
   .operation-tabs button { border-bottom: 0; }
   .operation-tabs button + button { border-left: 1px solid rgb(255 255 255 / 18%); padding-left: 1rem; }
   .back-link { display: none; }
@@ -284,6 +306,9 @@ input::placeholder, textarea::placeholder { color: #9aa3a8; }
   .login-card { width: calc(100% - 2rem); padding: 1.5rem; }
   .workspace { min-height: calc(100vh - 4.5rem); }
   .workspace-intro h1 { font-size: 2.5rem; }
+  .operation-tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .operation-tabs button:nth-child(3) { border-left: 0; border-top: 1px solid rgb(255 255 255 / 18%); }
+  .operation-tabs button:nth-child(4) { border-top: 1px solid rgb(255 255 255 / 18%); }
   .operation-tabs button { grid-template-columns: 1.7rem 1fr auto; min-height: 4rem; }
   .operation-tabs button strong { font-size: .75rem; }
   .operation-tabs button span { display: none; }
@@ -301,6 +326,9 @@ input::placeholder, textarea::placeholder { color: #9aa3a8; }
   .order-detail-grid { grid-template-columns: 1fr; }
   .detail-block--wide { grid-column: auto; }
   .codes-form { grid-template-columns: 1fr; }
+  .user-card { grid-template-columns: 1fr; }
+  .user-card__action { width: 100%; }
+  .password-actions { grid-template-columns: 1fr; }
 }
 
 @media (prefers-reduced-motion: reduce) {

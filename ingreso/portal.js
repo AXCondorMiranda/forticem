@@ -40,9 +40,17 @@ const dom = {
   ordersSummary: document.querySelector("[data-orders-summary]"),
   ordersMessage: document.querySelector("[data-orders-message]"),
   ordersList: document.querySelector("[data-orders-list]"),
+  usersSearch: document.querySelector("[data-users-search]"),
+  usersMessage: document.querySelector("[data-users-message]"),
+  usersList: document.querySelector("[data-users-list]"),
   orderDialog: document.querySelector("[data-order-dialog]"),
   orderDialogTitle: document.querySelector("[data-order-dialog-title]"),
   orderDetail: document.querySelector("[data-order-detail]"),
+  passwordDialog: document.querySelector("[data-password-dialog]"),
+  passwordForm: document.querySelector("[data-password-form]"),
+  passwordUser: document.querySelector("[data-password-user]"),
+  passwordMessage: document.querySelector("[data-password-message]"),
+  passwordSave: document.querySelector("[data-password-save]"),
   toast: document.querySelector("[data-toast]"),
 };
 
@@ -52,6 +60,7 @@ const state = {
   products: [],
   balances: new Map(),
   orders: [],
+  users: [],
   ordersShowAll: false,
   selectedOrderId: null,
   ordersChannel: null,
@@ -65,6 +74,7 @@ const permission = (name) =>
 const canUseProduction = () => permission("view_production") || permission("record_production");
 const canUseDemolding = () => permission("view_demolding") || permission("record_demolding");
 const canUseDispatch = () => permission("view_orders");
+const canManageUsers = () => permission("manage_users");
 
 const orderStatuses = {
   pending: "Pendiente",
@@ -97,6 +107,7 @@ function errorLabel(error) {
   if (/email not confirmed/i.test(message)) return "El correo aún no ha sido confirmado.";
   if (/failed to fetch|networkerror|load failed/i.test(message)) return "No hay conexión con el servidor. Revisa tu internet e inténtalo otra vez.";
   if (/permission|permiso|row-level security/i.test(message)) return "Tu cuenta no tiene permiso para realizar esta acción.";
+  if (/password should be at least|contraseña.*8/i.test(message)) return "La contraseña debe tener al menos 8 caracteres.";
   return message;
 }
 
@@ -131,6 +142,9 @@ function showLogin(message = "") {
   state.profile = null;
   state.products = [];
   state.orders = [];
+  state.users = [];
+  if (dom.orderDialog.open) dom.orderDialog.close();
+  if (dom.passwordDialog.open) dom.passwordDialog.close();
   dom.authView.hidden = false;
   dom.appView.hidden = true;
   dom.logout.hidden = true;
@@ -204,10 +218,12 @@ function configureWorkspace() {
   const productionTab = dom.tabs.find((item) => item.dataset.tab === "production");
   const demoldingTab = dom.tabs.find((item) => item.dataset.tab === "demolding");
   const dispatchTab = dom.tabs.find((item) => item.dataset.tab === "dispatch");
+  const usersTab = dom.tabs.find((item) => item.dataset.tab === "users");
   productionTab.hidden = !canUseProduction();
   demoldingTab.hidden = !canUseDemolding();
   dispatchTab.hidden = !canUseDispatch();
-  dom.noPermissions.hidden = canUseProduction() || canUseDemolding() || canUseDispatch();
+  usersTab.hidden = !canManageUsers();
+  dom.noPermissions.hidden = canUseProduction() || canUseDemolding() || canUseDispatch() || canManageUsers();
   dom.productionSave.hidden = !permission("record_production");
   dom.demoldingSave.hidden = !permission("record_demolding");
   dom.overrideField.hidden = state.profile.role !== "administrator";
@@ -220,7 +236,9 @@ function configureWorkspace() {
         ? "demolding"
         : canUseDispatch()
           ? "dispatch"
-          : null;
+          : canManageUsers()
+            ? "users"
+            : null;
   dom.panels.forEach((panel) => { panel.hidden = true; });
   if (initialTab) setActiveTab(initialTab);
 }
@@ -512,6 +530,97 @@ async function fetchOrders() {
   renderOrders();
 }
 
+async function invokeAdminUsers(body) {
+  const { data, error } = await supabase.functions.invoke("admin-users", { body });
+  if (error) {
+    let serverMessage = data?.error;
+    if (!serverMessage && error.context instanceof Response) {
+      try {
+        const payload = await error.context.clone().json();
+        serverMessage = payload?.error;
+      } catch (_) {
+        // Supabase may return an empty or non-JSON response.
+      }
+    }
+    throw new Error(serverMessage || error.message || "No se pudo gestionar el usuario.");
+  }
+  if (data?.error) throw new Error(data.error);
+  return data || {};
+}
+
+function renderUsers() {
+  const query = dom.usersSearch.value.trim().toLocaleLowerCase("es");
+  const visible = state.users.filter((user) => {
+    const searchable = [user.full_name, user.email, roleLabel(user.role)].filter(Boolean).join(" ").toLocaleLowerCase("es");
+    return !query || searchable.includes(query);
+  });
+  dom.usersList.replaceChildren();
+  if (!visible.length) {
+    const empty = document.createElement("p");
+    empty.className = "records-empty";
+    empty.textContent = query ? "No hay usuarios que coincidan con la búsqueda." : "No se encontraron usuarios.";
+    dom.usersList.append(empty);
+    return;
+  }
+
+  visible.forEach((user) => {
+    const card = document.createElement("article");
+    card.className = "user-card";
+    const identity = document.createElement("div");
+    identity.className = "user-card__identity";
+    const name = document.createElement("strong");
+    name.textContent = user.full_name || "Usuario sin nombre";
+    const email = document.createElement("small");
+    email.textContent = user.email || "Sin correo disponible";
+    const meta = document.createElement("div");
+    meta.className = "user-card__meta";
+    const role = document.createElement("span");
+    role.className = "user-role";
+    role.textContent = roleLabel(user.role);
+    const status = document.createElement("span");
+    status.className = `user-status ${user.is_active ? "is-active" : "is-inactive"}`;
+    status.textContent = user.is_active ? "Activo" : "Inactivo";
+    meta.append(role, status);
+    identity.append(name, email, meta);
+
+    const change = document.createElement("button");
+    change.type = "button";
+    change.className = "user-card__action";
+    change.textContent = "Cambiar contraseña";
+    change.addEventListener("click", () => openPasswordDialog(user));
+    card.append(identity, change);
+    dom.usersList.append(card);
+  });
+}
+
+async function fetchUsers() {
+  if (!canManageUsers()) return;
+  dom.usersList.innerHTML = '<div class="loading-line" aria-label="Cargando usuarios"></div>';
+  setMessage(dom.usersMessage);
+  try {
+    const data = await invokeAdminUsers({ action: "list" });
+    state.users = Array.isArray(data.users) ? data.users.sort((a, b) => String(a.full_name || "").localeCompare(String(b.full_name || ""), "es")) : [];
+    renderUsers();
+  } catch (error) {
+    dom.usersList.replaceChildren();
+    setMessage(dom.usersMessage, errorLabel(error));
+  }
+}
+
+function openPasswordDialog(user) {
+  dom.passwordForm.reset();
+  dom.passwordForm.elements.userId.value = user.id;
+  setMessage(dom.passwordMessage);
+  dom.passwordUser.replaceChildren();
+  const name = document.createElement("strong");
+  name.textContent = user.full_name || "Usuario sin nombre";
+  const email = document.createElement("small");
+  email.textContent = user.email || "Sin correo disponible";
+  dom.passwordUser.append(name, email);
+  dom.passwordDialog.showModal();
+  requestAnimationFrame(() => dom.passwordForm.elements.password.focus());
+}
+
 function subscribeToOrders() {
   if (!canUseDispatch() || state.ordersChannel) return;
   state.ordersChannel = supabase
@@ -688,6 +797,7 @@ async function openSession(session) {
       canUseProduction() ? loadRecords("production") : Promise.resolve(),
       canUseDemolding() ? fetchBalances().then(() => loadRecords("demolding")) : Promise.resolve(),
       canUseDispatch() ? fetchOrders() : Promise.resolve(),
+      canManageUsers() ? fetchUsers() : Promise.resolve(),
     ]);
   } catch (loadError) {
     showToast(errorLabel(loadError), true);
@@ -716,6 +826,7 @@ dom.loginForm.addEventListener("submit", async (event) => {
 dom.logout.addEventListener("click", async () => {
   dom.logout.disabled = true;
   if (dom.orderDialog.open) dom.orderDialog.close();
+  if (dom.passwordDialog.open) dom.passwordDialog.close();
   await supabase.auth.signOut({ scope: "local" });
   dom.loginForm.reset();
   showLogin();
@@ -802,6 +913,7 @@ dom.demoldingDate.addEventListener("change", () => loadRecords("demolding"));
 document.querySelector("[data-refresh-production]").addEventListener("click", () => loadRecords("production"));
 document.querySelector("[data-refresh-demolding]").addEventListener("click", async () => { await fetchBalances(); await loadRecords("demolding"); });
 document.querySelector("[data-refresh-orders]").addEventListener("click", () => fetchOrders());
+document.querySelector("[data-refresh-users]").addEventListener("click", () => fetchUsers());
 dom.ordersDate.addEventListener("change", () => {
   state.ordersShowAll = false;
   dom.ordersAll.textContent = "Ver todas las fechas";
@@ -814,9 +926,43 @@ dom.ordersAll.addEventListener("click", () => {
   dom.ordersAll.textContent = state.ordersShowAll ? "Filtrar por fecha" : "Ver todas las fechas";
   renderOrders();
 });
+dom.usersSearch.addEventListener("input", renderUsers);
 document.querySelector("[data-close-order-dialog]").addEventListener("click", () => dom.orderDialog.close());
 dom.orderDialog.addEventListener("click", (event) => {
   if (event.target === dom.orderDialog) dom.orderDialog.close();
+});
+document.querySelector("[data-close-password-dialog]").addEventListener("click", () => dom.passwordDialog.close());
+document.querySelector("[data-cancel-password]").addEventListener("click", () => dom.passwordDialog.close());
+dom.passwordDialog.addEventListener("click", (event) => {
+  if (event.target === dom.passwordDialog) dom.passwordDialog.close();
+});
+dom.passwordForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  setMessage(dom.passwordMessage);
+  if (!canManageUsers()) return setMessage(dom.passwordMessage, "Tu cuenta no tiene permiso para gestionar usuarios.");
+  const password = String(dom.passwordForm.elements.password.value || "");
+  const confirmation = String(dom.passwordForm.elements.confirmation.value || "");
+  if (password.length < 8) return setMessage(dom.passwordMessage, "La contraseña debe tener al menos 8 caracteres.");
+  if (password !== confirmation) return setMessage(dom.passwordMessage, "Las contraseñas no coinciden.");
+
+  const userId = dom.passwordForm.elements.userId.value;
+  setBusy(dom.passwordSave, true, "Guardando…");
+  try {
+    await invokeAdminUsers({ action: "change_password", user_id: userId, password });
+    const changedOwnPassword = userId === state.session.user.id;
+    dom.passwordForm.reset();
+    dom.passwordDialog.close();
+    if (changedOwnPassword) {
+      await supabase.auth.signOut({ scope: "local" });
+      showLogin("Contraseña actualizada. Inicia sesión nuevamente.");
+    } else {
+      showToast("Contraseña actualizada y sesiones anteriores cerradas.");
+    }
+  } catch (error) {
+    setMessage(dom.passwordMessage, errorLabel(error));
+  } finally {
+    setBusy(dom.passwordSave, false, "");
+  }
 });
 
 function updateConnection() {
