@@ -79,6 +79,9 @@
             <button type="button" data-tab="users">
               <span>04</span><strong>Usuarios</strong><i aria-hidden="true">→</i>
             </button>
+            <button type="button" data-tab="reports">
+              <span>05</span><strong>Reportes</strong><i aria-hidden="true">→</i>
+            </button>
           </nav>
 
           <a class="back-link" href="../">Volver al sitio FORTICEM <span aria-hidden="true">↗</span></a>
@@ -160,6 +163,36 @@
             <p class="users-note">La nueva contraseña no se almacena ni se muestra. Al cambiarla se cerrarán las sesiones anteriores del usuario.</p>
             <p class="form-message" data-users-message role="alert" hidden></p>
             <div class="users-list" data-users-list></div>
+          </section>
+
+          <section class="operation-panel reports-panel" data-panel="reports" hidden>
+            <header class="operation-heading reports-heading">
+              <div><span>Consulta por fechas</span><h2>Reportes</h2></div>
+              <button class="refresh-button" type="button" data-refresh-report>Actualizar</button>
+            </header>
+
+            <form class="report-controls" data-report-form>
+              <label><span>Desde</span><input type="date" data-report-start required /></label>
+              <label><span>Hasta</span><input type="date" data-report-end required /></label>
+              <label data-report-worker-field><span>Trabajador</span><select data-report-worker><option value="">Todos los trabajadores</option></select></label>
+              <button class="primary-button report-apply" type="submit" data-report-apply><span>Consultar</span><span aria-hidden="true">↗</span></button>
+            </form>
+            <div class="report-presets" aria-label="Rangos rápidos">
+              <button type="button" data-report-days="0">Hoy</button>
+              <button type="button" data-report-days="6">Últimos 7 días</button>
+              <button type="button" data-report-days="29">Últimos 30 días</button>
+              <button type="button" data-report-month>Este mes</button>
+            </div>
+            <p class="report-scope" data-report-scope></p>
+            <p class="report-range" data-report-range></p>
+            <p class="form-message" data-report-message role="alert" hidden></p>
+
+            <div class="report-actions">
+              <button class="secondary-button" type="button" data-report-excel disabled>Exportar Excel (CSV)</button>
+              <button class="secondary-button" type="button" data-report-pdf disabled>Guardar PDF</button>
+            </div>
+            <div class="report-summary" data-report-summary></div>
+            <div class="report-results" data-report-results></div>
           </section>
 
           <section class="empty-permissions" data-no-permissions hidden>

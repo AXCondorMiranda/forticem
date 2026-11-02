@@ -43,6 +43,19 @@ const dom = {
   usersSearch: document.querySelector("[data-users-search]"),
   usersMessage: document.querySelector("[data-users-message]"),
   usersList: document.querySelector("[data-users-list]"),
+  reportForm: document.querySelector("[data-report-form]"),
+  reportStart: document.querySelector("[data-report-start]"),
+  reportEnd: document.querySelector("[data-report-end]"),
+  reportWorkerField: document.querySelector("[data-report-worker-field]"),
+  reportWorker: document.querySelector("[data-report-worker]"),
+  reportScope: document.querySelector("[data-report-scope]"),
+  reportRange: document.querySelector("[data-report-range]"),
+  reportMessage: document.querySelector("[data-report-message]"),
+  reportApply: document.querySelector("[data-report-apply]"),
+  reportSummary: document.querySelector("[data-report-summary]"),
+  reportResults: document.querySelector("[data-report-results]"),
+  reportExcel: document.querySelector("[data-report-excel]"),
+  reportPdf: document.querySelector("[data-report-pdf]"),
   orderDialog: document.querySelector("[data-order-dialog]"),
   orderDialogTitle: document.querySelector("[data-order-dialog-title]"),
   orderDetail: document.querySelector("[data-order-detail]"),
@@ -61,6 +74,7 @@ const state = {
   balances: new Map(),
   orders: [],
   users: [],
+  reportRows: [],
   ordersShowAll: false,
   selectedOrderId: null,
   ordersChannel: null,
@@ -75,6 +89,7 @@ const canUseProduction = () => permission("view_production") || permission("reco
 const canUseDemolding = () => permission("view_demolding") || permission("record_demolding");
 const canUseDispatch = () => permission("view_orders");
 const canManageUsers = () => permission("manage_users");
+const canUseReports = () => canUseProduction() || canUseDemolding();
 
 const orderStatuses = {
   pending: "Pendiente",
@@ -91,6 +106,18 @@ function localDateValue() {
   const now = new Date();
   const offset = now.getTimezoneOffset() * 60000;
   return new Date(now.getTime() - offset).toISOString().slice(0, 10);
+}
+
+function localDateOffset(days) {
+  const date = new Date();
+  date.setDate(date.getDate() - days);
+  const offset = date.getTimezoneOffset() * 60000;
+  return new Date(date.getTime() - offset).toISOString().slice(0, 10);
+}
+
+function dateLabel(value) {
+  return new Intl.DateTimeFormat("es-PE", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "UTC" })
+    .format(new Date(`${value}T00:00:00Z`));
 }
 
 function numberLabel(value) {
@@ -143,6 +170,7 @@ function showLogin(message = "") {
   state.products = [];
   state.orders = [];
   state.users = [];
+  state.reportRows = [];
   if (dom.orderDialog.open) dom.orderDialog.close();
   if (dom.passwordDialog.open) dom.passwordDialog.close();
   dom.authView.hidden = false;
@@ -219,14 +247,20 @@ function configureWorkspace() {
   const demoldingTab = dom.tabs.find((item) => item.dataset.tab === "demolding");
   const dispatchTab = dom.tabs.find((item) => item.dataset.tab === "dispatch");
   const usersTab = dom.tabs.find((item) => item.dataset.tab === "users");
+  const reportsTab = dom.tabs.find((item) => item.dataset.tab === "reports");
   productionTab.hidden = !canUseProduction();
   demoldingTab.hidden = !canUseDemolding();
   dispatchTab.hidden = !canUseDispatch();
   usersTab.hidden = !canManageUsers();
-  dom.noPermissions.hidden = canUseProduction() || canUseDemolding() || canUseDispatch() || canManageUsers();
+  reportsTab.hidden = !canUseReports();
+  dom.noPermissions.hidden = canUseProduction() || canUseDemolding() || canUseDispatch() || canManageUsers() || canUseReports();
   dom.productionSave.hidden = !permission("record_production");
   dom.demoldingSave.hidden = !permission("record_demolding");
   dom.overrideField.hidden = state.profile.role !== "administrator";
+  dom.reportWorkerField.hidden = state.profile.role !== "administrator";
+  dom.reportScope.textContent = state.profile.role === "administrator"
+    ? "Puedes consultar a todos los trabajadores o filtrar uno en particular."
+    : "Este reporte muestra únicamente tu propia producción y desmolde.";
 
   const initialTab = canUseDispatch() && state.profile.role === "dispatch"
     ? "dispatch"
@@ -238,9 +272,142 @@ function configureWorkspace() {
           ? "dispatch"
           : canManageUsers()
             ? "users"
+            : canUseReports()
+              ? "reports"
             : null;
   dom.panels.forEach((panel) => { panel.hidden = true; });
   if (initialTab) setActiveTab(initialTab);
+}
+
+function filteredReportRows() {
+  const workerId = dom.reportWorker.value;
+  return workerId ? state.reportRows.filter((row) => row.worker_id === workerId) : state.reportRows;
+}
+
+function reportWorkerOptions() {
+  const previous = dom.reportWorker.value;
+  const workers = [...new Map(state.reportRows.map((row) => [row.worker_id, row.worker_name || "Trabajador sin nombre"])).entries()]
+    .sort((a, b) => a[1].localeCompare(b[1], "es"));
+  dom.reportWorker.replaceChildren(new Option("Todos los trabajadores", ""), ...workers.map(([id, name]) => new Option(name, id)));
+  if (workers.some(([id]) => id === previous)) dom.reportWorker.value = previous;
+}
+
+function reportTotals(rows) {
+  return rows.reduce((totals, row) => {
+    totals.produced += Number(row.produced_quantity) || 0;
+    totals.demolded += Number(row.demolded_quantity) || 0;
+    return totals;
+  }, { produced: 0, demolded: 0 });
+}
+
+function renderReport() {
+  const rows = filteredReportRows();
+  dom.reportSummary.replaceChildren();
+  dom.reportResults.replaceChildren();
+  dom.reportExcel.disabled = !rows.length;
+  dom.reportPdf.disabled = !rows.length;
+
+  if (!rows.length) {
+    const empty = document.createElement("p");
+    empty.className = "records-empty";
+    empty.textContent = "No hay producción ni desmolde dentro de las fechas seleccionadas.";
+    dom.reportResults.append(empty);
+    return;
+  }
+
+  const totals = reportTotals(rows);
+  const measures = new Set(rows.map((row) => row.product_id || `${row.product_code}-${row.product_name}`)).size;
+  const workers = new Set(rows.map((row) => row.worker_id)).size;
+  [["Producido", totals.produced], ["Desmoldado", totals.demolded], ["Medidas", measures], ["Trabajadores", workers]].forEach(([label, value]) => {
+    const card = document.createElement("article");
+    card.innerHTML = `<span>${label}</span><strong>${typeof value === "number" ? numberLabel(value) : value}</strong>`;
+    dom.reportSummary.append(card);
+  });
+
+  const grouped = new Map();
+  rows.forEach((row) => {
+    const key = row.worker_id || row.worker_name;
+    if (!grouped.has(key)) grouped.set(key, { name: row.worker_name || "Trabajador sin nombre", rows: [] });
+    grouped.get(key).rows.push(row);
+  });
+
+  [...grouped.values()].sort((a, b) => a.name.localeCompare(b.name, "es")).forEach((worker) => {
+    const section = document.createElement("section");
+    section.className = "worker-report";
+    const workerTotal = reportTotals(worker.rows);
+    const heading = document.createElement("header");
+    const identity = document.createElement("div");
+    const identityLabel = document.createElement("span");
+    identityLabel.textContent = "Trabajador";
+    const workerName = document.createElement("h3");
+    workerName.textContent = worker.name;
+    identity.append(identityLabel, workerName);
+    const totalsText = document.createElement("p");
+    const produced = document.createElement("strong");
+    produced.textContent = numberLabel(workerTotal.produced);
+    const demolded = document.createElement("strong");
+    demolded.textContent = numberLabel(workerTotal.demolded);
+    totalsText.append(produced, " producido · ", demolded, " desmoldado");
+    heading.append(identity, totalsText);
+    const scroll = document.createElement("div");
+    scroll.className = "report-table-wrap";
+    const table = document.createElement("table");
+    table.className = "report-table";
+    table.innerHTML = "<thead><tr><th>Fecha</th><th>Medida</th><th>Producto</th><th>Producido</th><th>Desmoldado</th><th>Unidad</th></tr></thead>";
+    const body = document.createElement("tbody");
+    worker.rows
+      .slice()
+      .sort((a, b) => a.movement_date.localeCompare(b.movement_date) || a.product_name.localeCompare(b.product_name, "es"))
+      .forEach((row) => {
+        const tr = document.createElement("tr");
+        [dateLabel(row.movement_date), row.product_code || "—", row.product_name, numberLabel(row.produced_quantity), numberLabel(row.demolded_quantity), row.unit]
+          .forEach((value) => { const td = document.createElement("td"); td.textContent = value; tr.append(td); });
+        body.append(tr);
+      });
+    table.append(body);
+    scroll.append(table);
+    section.append(heading, scroll);
+    dom.reportResults.append(section);
+  });
+}
+
+async function fetchReport() {
+  setMessage(dom.reportMessage);
+  if (!dom.reportStart.value || !dom.reportEnd.value) return setMessage(dom.reportMessage, "Selecciona ambas fechas.");
+  if (dom.reportStart.value > dom.reportEnd.value) return setMessage(dom.reportMessage, "La fecha inicial no puede ser posterior a la fecha final.");
+  setBusy(dom.reportApply, true, "Consultando…");
+  try {
+    const { data, error } = await supabase.rpc("operational_worker_report", {
+      p_start_date: dom.reportStart.value,
+      p_end_date: dom.reportEnd.value,
+    });
+    if (error) throw error;
+    state.reportRows = data || [];
+    dom.reportRange.textContent = `Periodo: ${dateLabel(dom.reportStart.value)} al ${dateLabel(dom.reportEnd.value)}`;
+    if (state.profile.role === "administrator") reportWorkerOptions();
+    renderReport();
+  } catch (error) {
+    state.reportRows = [];
+    renderReport();
+    setMessage(dom.reportMessage, errorLabel(error));
+  } finally {
+    setBusy(dom.reportApply, false, "");
+  }
+}
+
+function downloadReportExcel() {
+  const rows = filteredReportRows();
+  if (!rows.length) return;
+  const headers = ["Fecha", "Trabajador", "Medida", "Producto", "Producido", "Desmoldado", "Unidad"];
+  const escape = (value) => `"${String(value ?? "").replaceAll('"', '""')}"`;
+  const lines = [headers, ...rows.map((row) => [dateLabel(row.movement_date), row.worker_name, row.product_code, row.product_name, row.produced_quantity, row.demolded_quantity, row.unit])]
+    .map((line) => line.map(escape).join(";"));
+  const blob = new Blob(["\uFEFF", lines.join("\r\n")], { type: "text/csv;charset=utf-8" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = `forticem-reporte-${dom.reportStart.value}-${dom.reportEnd.value}.csv`;
+  link.click();
+  URL.revokeObjectURL(link.href);
 }
 
 async function fetchProducts() {
@@ -798,6 +965,7 @@ async function openSession(session) {
       canUseDemolding() ? fetchBalances().then(() => loadRecords("demolding")) : Promise.resolve(),
       canUseDispatch() ? fetchOrders() : Promise.resolve(),
       canManageUsers() ? fetchUsers() : Promise.resolve(),
+      canUseReports() ? fetchReport() : Promise.resolve(),
     ]);
   } catch (loadError) {
     showToast(errorLabel(loadError), true);
@@ -914,6 +1082,21 @@ document.querySelector("[data-refresh-production]").addEventListener("click", ()
 document.querySelector("[data-refresh-demolding]").addEventListener("click", async () => { await fetchBalances(); await loadRecords("demolding"); });
 document.querySelector("[data-refresh-orders]").addEventListener("click", () => fetchOrders());
 document.querySelector("[data-refresh-users]").addEventListener("click", () => fetchUsers());
+document.querySelector("[data-refresh-report]").addEventListener("click", () => fetchReport());
+dom.reportForm.addEventListener("submit", (event) => { event.preventDefault(); fetchReport(); });
+dom.reportWorker.addEventListener("change", renderReport);
+dom.reportExcel.addEventListener("click", downloadReportExcel);
+dom.reportPdf.addEventListener("click", () => window.print());
+document.querySelectorAll("[data-report-days]").forEach((button) => button.addEventListener("click", () => {
+  dom.reportEnd.value = localDateValue();
+  dom.reportStart.value = localDateOffset(Number(button.dataset.reportDays));
+  fetchReport();
+}));
+document.querySelector("[data-report-month]").addEventListener("click", () => {
+  dom.reportEnd.value = localDateValue();
+  dom.reportStart.value = `${dom.reportEnd.value.slice(0, 8)}01`;
+  fetchReport();
+});
 dom.ordersDate.addEventListener("change", () => {
   state.ordersShowAll = false;
   dom.ordersAll.textContent = "Ver todas las fechas";
@@ -977,6 +1160,8 @@ updateConnection();
 dom.productionDate.value = localDateValue();
 dom.demoldingDate.value = localDateValue();
 dom.ordersDate.value = localDateValue();
+dom.reportEnd.value = localDateValue();
+dom.reportStart.value = `${dom.reportEnd.value.slice(0, 8)}01`;
 
 supabase.auth.onAuthStateChange((event) => {
   if (event === "SIGNED_OUT" && !dom.authView.hidden) return;
