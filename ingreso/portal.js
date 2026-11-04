@@ -526,6 +526,16 @@ function formatDate(value) {
   return new Intl.DateTimeFormat("es-PE", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "UTC" }).format(new Date(`${value}T00:00:00Z`));
 }
 
+function formatArrivalDateTime(value) {
+  return new Intl.DateTimeFormat("es-PE", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(new Date(value));
+}
+
 function visibleOrders() {
   const query = dom.ordersSearch.value.trim().toLowerCase();
   const status = dom.ordersStatus.value;
@@ -639,7 +649,7 @@ function renderOrders() {
     title.textContent = order.client_name;
     const meta = document.createElement("p");
     meta.className = "order-card__meta";
-    [order.district, `Entrega: ${formatDate(scheduledDate(order))}`, `${numberLabel(orderWeight(order))} kg`, order.registered_by_name ? `Encargado: ${order.registered_by_name}` : ""]
+    [order.district, `Entrega: ${formatDate(scheduledDate(order))}`, `Llegó al app: ${formatArrivalDateTime(order.created_at)}`, `${numberLabel(orderWeight(order))} kg`, order.registered_by_name ? `Encargado: ${order.registered_by_name}` : ""]
       .filter(Boolean)
       .forEach((value) => {
         const span = document.createElement("span");
@@ -860,6 +870,7 @@ function renderOrderDetail(order) {
   grid.append(
     detailBlock("Cliente y destino", order.client_name, [order.client_phone, order.district, order.address_line, `Entrega: ${formatDate(scheduledDate(order))}`]),
     detailBlock("Responsable", order.registered_by_name || "Usuario", [order.registered_by_email, `Peso total: ${numberLabel(orderWeight(order))} kg`]),
+    detailBlock("Seguimiento de despacho", "Hora de ingreso al app", [formatArrivalDateTime(order.created_at)]),
   );
   if (order.notes?.trim()) grid.append(detailBlock("Observaciones", "Notas del pedido", [order.notes.trim()], true));
 
