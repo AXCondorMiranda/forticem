@@ -969,7 +969,7 @@ function renderOrderDetail(order) {
   });
   grid.append(products);
 
-  if (permission("delete_orders")) {
+  if (state.profile?.role === "administrator") {
     const danger = document.createElement("section");
     danger.className = "detail-block detail-block--wide order-danger";
     const eyebrow = document.createElement("span");
