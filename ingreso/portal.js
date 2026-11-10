@@ -604,6 +604,39 @@ async function transitionOrder(order, action, button) {
   }
 }
 
+async function deleteOrder(order, button) {
+  const reason = window.prompt(
+    `Indica el motivo para eliminar ${order.order_number}.\n\nEl motivo quedará guardado en auditoría.`,
+    "",
+  );
+  if (reason === null) return;
+  const normalizedReason = reason.trim();
+  if (normalizedReason.length < 5) {
+    showToast("Escribe un motivo de al menos 5 caracteres.", true);
+    return;
+  }
+  if (!window.confirm(
+    `¿Eliminar definitivamente ${order.order_number}?\n\n` +
+    "El pedido y sus productos se eliminarán. El stock descontado será restaurado.",
+  )) return;
+
+  button.disabled = true;
+  try {
+    const { error } = await supabase.rpc("delete_order", {
+      p_order_id: order.id,
+      p_reason: normalizedReason,
+    });
+    if (error) throw error;
+    state.selectedOrderId = null;
+    if (dom.orderDialog.open) dom.orderDialog.close();
+    showToast(`${order.order_number} eliminado. El stock fue restaurado.`);
+    await fetchOrders();
+  } catch (error) {
+    showToast(errorLabel(error), true);
+    button.disabled = false;
+  }
+}
+
 function renderOrders() {
   const orders = visibleOrders();
   dom.ordersList.replaceChildren();
@@ -935,6 +968,25 @@ function renderOrderDetail(order) {
     products.append(item);
   });
   grid.append(products);
+
+  if (permission("delete_orders")) {
+    const danger = document.createElement("section");
+    danger.className = "detail-block detail-block--wide order-danger";
+    const eyebrow = document.createElement("span");
+    eyebrow.textContent = "Zona de administración";
+    const heading = document.createElement("h3");
+    heading.textContent = "Eliminar pedido";
+    const description = document.createElement("p");
+    description.textContent = "Solicita un motivo, guarda la acción en auditoría y restaura el stock descontado por el pedido.";
+    const remove = document.createElement("button");
+    remove.type = "button";
+    remove.className = "order-action order-action--danger";
+    remove.textContent = "Eliminar pedido";
+    remove.addEventListener("click", () => deleteOrder(order, remove));
+    danger.append(eyebrow, heading, description, remove);
+    grid.append(danger);
+  }
+
   dom.orderDetail.append(grid);
 }
 

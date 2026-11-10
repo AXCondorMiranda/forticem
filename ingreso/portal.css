@@ -224,6 +224,7 @@ input::placeholder, textarea::placeholder { color: #9aa3a8; }
 .order-card__actions { display: flex; flex-direction: column; justify-content: center; gap: .55rem; min-width: 11.5rem; }
 .order-action { min-height: 2.65rem; padding: .6rem .75rem; border: 1px solid var(--navy); color: var(--white); background: var(--navy); font-size: .68rem; font-weight: 750; text-transform: uppercase; }
 .order-action--secondary { color: var(--navy); background: transparent; }
+.order-action--danger { border-color: var(--danger); color: var(--white); background: var(--danger); }
 .order-action:disabled { cursor: wait; opacity: .55; }
 
 .order-dialog { width: min(58rem, calc(100% - 2rem)); max-height: calc(100vh - 2rem); overflow: auto; padding: 0; border: 0; color: var(--ink); background: var(--paper); box-shadow: 0 28px 90px rgb(0 0 0 / 35%); }
@@ -240,6 +241,9 @@ input::placeholder, textarea::placeholder { color: #9aa3a8; }
 .detail-block > span { color: #168d7c; font: 500 .61rem "DM Mono", monospace; text-transform: uppercase; }
 .detail-block h3 { margin: .5rem 0; font-size: 1rem; }
 .detail-block p { margin: .25rem 0; color: #53616a; font-size: .76rem; line-height: 1.55; }
+.order-danger { border-color: rgb(166 47 47 / 35%); background: #fff1ef; }
+.order-danger > span { color: var(--danger); }
+.order-danger .order-action { margin-top: .8rem; }
 .order-line { margin-top: .75rem; padding-top: .75rem; border-top: 1px solid var(--line); }
 .order-line:first-of-type { margin-top: .5rem; }
 .order-line__heading { display: flex; align-items: start; justify-content: space-between; gap: 1rem; }
