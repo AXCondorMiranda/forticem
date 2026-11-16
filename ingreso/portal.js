@@ -390,7 +390,7 @@ function renderReport() {
   });
 }
 
-function renderEarnings({ panel, summary, results, rows: sourceRows, quantityKey, quantityLabel, emptyLabel }) {
+function renderEarnings({ panel, summary, results, rows: sourceRows, quantityKey, quantityLabel, summaryQuantityLabel, emptyLabel }) {
   const isAdministrator = state.profile?.role === "administrator";
   panel.hidden = !isAdministrator;
   summary.replaceChildren();
@@ -412,7 +412,7 @@ function renderEarnings({ panel, summary, results, rows: sourceRows, quantityKey
   const measures = new Set(rows.map((row) => row.product_id)).size;
   [
     ["Total generado", currencyLabel(totalGenerated)],
-    [`Unidades ${quantityLabel.toLowerCase()}`, numberLabel(totalQuantity)],
+    [`Unidades ${summaryQuantityLabel}`, numberLabel(totalQuantity)],
     ["Trabajadores", numberLabel(workers)],
     ["Medidas con tarifa", numberLabel(measures)],
   ].forEach(([label, value]) => {
@@ -477,6 +477,7 @@ function renderAdminEarnings() {
     rows: state.productionEarningsRows,
     quantityKey: "produced_quantity",
     quantityLabel: "Producido",
+    summaryQuantityLabel: "producidas",
     emptyLabel: "No hay producción con tarifa configurada dentro de las fechas seleccionadas.",
   });
   renderEarnings({
@@ -486,6 +487,7 @@ function renderAdminEarnings() {
     rows: state.demoldingEarningsRows,
     quantityKey: "demolded_quantity",
     quantityLabel: "Desmoldado",
+    summaryQuantityLabel: "desmoldadas",
     emptyLabel: "No hay desmolde con tarifa configurada dentro de las fechas seleccionadas.",
   });
 }
