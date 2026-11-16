@@ -475,7 +475,13 @@ function renderRecords(target, rows, dateField, kind) {
     name.textContent = row.product_name;
     const detail = document.createElement("small");
     const time = row.created_at ? new Intl.DateTimeFormat("es-PE", { hour: "2-digit", minute: "2-digit" }).format(new Date(row.created_at)) : "";
-    const extras = [time, row.batch_code ? `Lote ${row.batch_code}` : "", row.is_override ? "Excepción administrativa" : ""].filter(Boolean);
+    const creator = relationObject(row.creator);
+    const extras = [
+      creator.full_name ? `Registrado por ${creator.full_name}` : "Registrado por usuario",
+      time,
+      row.batch_code ? `Lote ${row.batch_code}` : "",
+      row.is_override ? "Excepción administrativa" : "",
+    ].filter(Boolean);
     detail.textContent = extras.join(" · ") || "Registro guardado";
     copy.append(name, detail);
     const actions = document.createElement("div");
@@ -507,8 +513,8 @@ async function loadRecords(kind) {
   const table = isProduction ? "production_records" : "demolding_records";
   const dateColumn = isProduction ? "production_date" : "demolding_date";
   const columns = isProduction
-    ? "id, product_name, unit, quantity, batch_code, notes, created_at"
-    : "id, product_name, unit, quantity, notes, created_at, is_override";
+    ? "id, product_name, unit, quantity, batch_code, notes, created_at, creator:profiles!production_records_created_by_fkey(full_name)"
+    : "id, product_name, unit, quantity, notes, created_at, is_override, creator:profiles!demolding_records_created_by_fkey(full_name)";
   const { data, error } = await supabase
     .from(table)
     .select(columns)
