@@ -296,6 +296,15 @@ input::placeholder, textarea::placeholder { color: #9aa3a8; }
 .report-summary span, .worker-report header span { display: block; color: #168d7c; font: 500 .6rem "DM Mono", monospace; text-transform: uppercase; }
 .report-summary strong { display: block; margin-top: .45rem; font-size: 1.35rem; }
 .report-results { display: grid; gap: 2rem; }
+.earnings-panel { margin: 0 0 2.5rem; padding: 1.25rem; border: 1px solid rgb(11 23 37 / 18%); background: #e8f8f4; }
+.earnings-panel > header { display: flex; align-items: end; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; padding-bottom: .9rem; border-bottom: 1px solid #8dbbb3; }
+.earnings-panel > header span { color: #087d6d; font: 600 .6rem "DM Mono", monospace; text-transform: uppercase; }
+.earnings-panel > header h3 { margin: .3rem 0 0; font-size: 1.65rem; letter-spacing: -.035em; }
+.earnings-panel > header p { max-width: 28rem; margin: 0; color: var(--muted); font-size: .72rem; text-align: right; }
+.earnings-summary { margin-bottom: 1.5rem; }
+.earnings-results { display: grid; gap: 1.5rem; }
+.earnings-worker { padding: 1rem; background: rgb(255 255 255 / 68%); }
+.earnings-table td:nth-child(2), .earnings-table td:nth-child(3), .earnings-table td:nth-child(4) { color: #087d6d; font-family: "DM Mono", monospace; font-weight: 600; }
 .worker-report { break-inside: avoid; }
 .worker-report > header { display: flex; align-items: end; justify-content: space-between; gap: 1rem; padding-bottom: .9rem; border-bottom: 1px solid var(--ink); }
 .worker-report h3 { margin: .25rem 0 0; font-size: 1.45rem; }
@@ -356,6 +365,8 @@ input::placeholder, textarea::placeholder { color: #9aa3a8; }
   .primary-button { position: sticky; bottom: .75rem; z-index: 5; box-shadow: 0 8px 25px rgb(6 23 47 / 22%); }
   .dispatch-controls { grid-template-columns: 1fr; }
   .report-controls, .report-summary { grid-template-columns: 1fr; }
+  .earnings-panel > header { align-items: start; flex-direction: column; }
+  .earnings-panel > header p { text-align: left; }
   .report-apply { position: static; }
   .worker-report > header { align-items: start; flex-direction: column; }
   .order-card { grid-template-columns: 1fr; }

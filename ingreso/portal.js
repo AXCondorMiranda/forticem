@@ -54,6 +54,9 @@ const dom = {
   reportApply: document.querySelector("[data-report-apply]"),
   reportSummary: document.querySelector("[data-report-summary]"),
   reportResults: document.querySelector("[data-report-results]"),
+  earningsPanel: document.querySelector("[data-earnings-panel]"),
+  earningsSummary: document.querySelector("[data-earnings-summary]"),
+  earningsResults: document.querySelector("[data-earnings-results]"),
   reportExcel: document.querySelector("[data-report-excel]"),
   reportPdf: document.querySelector("[data-report-pdf]"),
   orderDialog: document.querySelector("[data-order-dialog]"),
@@ -75,6 +78,7 @@ const state = {
   orders: [],
   users: [],
   reportRows: [],
+  earningsRows: [],
   ordersShowAll: false,
   selectedOrderId: null,
   ordersChannel: null,
@@ -124,6 +128,10 @@ function numberLabel(value) {
   return new Intl.NumberFormat("es-PE", { maximumFractionDigits: 3 }).format(Number(value) || 0);
 }
 
+function currencyLabel(value) {
+  return new Intl.NumberFormat("es-PE", { style: "currency", currency: "PEN" }).format(Number(value) || 0);
+}
+
 function roleLabel(role) {
   return ({ administrator: "Administrador", sales: "Ventas", dispatch: "Despacho", client: "Cliente" })[role] || "Personal FORTICEM";
 }
@@ -171,6 +179,7 @@ function showLogin(message = "") {
   state.orders = [];
   state.users = [];
   state.reportRows = [];
+  state.earningsRows = [];
   if (dom.orderDialog.open) dom.orderDialog.close();
   if (dom.passwordDialog.open) dom.passwordDialog.close();
   dom.authView.hidden = false;
@@ -284,6 +293,11 @@ function filteredReportRows() {
   return workerId ? state.reportRows.filter((row) => row.worker_id === workerId) : state.reportRows;
 }
 
+function filteredEarningsRows() {
+  const workerId = dom.reportWorker.value;
+  return workerId ? state.earningsRows.filter((row) => row.worker_id === workerId) : state.earningsRows;
+}
+
 function reportWorkerOptions() {
   const previous = dom.reportWorker.value;
   const workers = [...new Map(state.reportRows.map((row) => [row.worker_id, row.worker_name || "Trabajador sin nombre"])).entries()]
@@ -371,24 +385,111 @@ function renderReport() {
   });
 }
 
+function renderEarnings() {
+  const isAdministrator = state.profile?.role === "administrator";
+  dom.earningsPanel.hidden = !isAdministrator;
+  dom.earningsSummary.replaceChildren();
+  dom.earningsResults.replaceChildren();
+  if (!isAdministrator) return;
+
+  const rows = filteredEarningsRows();
+  if (!rows.length) {
+    const empty = document.createElement("p");
+    empty.className = "records-empty";
+    empty.textContent = "No hay desmolde con tarifa configurada dentro de las fechas seleccionadas.";
+    dom.earningsResults.append(empty);
+    return;
+  }
+
+  const totalGenerated = rows.reduce((total, row) => total + (Number(row.generated_amount) || 0), 0);
+  const totalDemolded = rows.reduce((total, row) => total + (Number(row.demolded_quantity) || 0), 0);
+  const workers = new Set(rows.map((row) => row.worker_id)).size;
+  const measures = new Set(rows.map((row) => row.product_id)).size;
+  [
+    ["Total generado", currencyLabel(totalGenerated)],
+    ["Unidades desmoldadas", numberLabel(totalDemolded)],
+    ["Trabajadores", numberLabel(workers)],
+    ["Medidas con tarifa", numberLabel(measures)],
+  ].forEach(([label, value]) => {
+    const card = document.createElement("article");
+    const caption = document.createElement("span");
+    caption.textContent = label;
+    const amount = document.createElement("strong");
+    amount.textContent = value;
+    card.append(caption, amount);
+    dom.earningsSummary.append(card);
+  });
+
+  const grouped = new Map();
+  rows.forEach((row) => {
+    const key = row.worker_id || row.worker_name;
+    if (!grouped.has(key)) grouped.set(key, { name: row.worker_name || "Trabajador sin nombre", rows: [] });
+    grouped.get(key).rows.push(row);
+  });
+
+  [...grouped.values()].sort((a, b) => a.name.localeCompare(b.name, "es")).forEach((worker) => {
+    const section = document.createElement("section");
+    section.className = "worker-report earnings-worker";
+    const heading = document.createElement("header");
+    const identity = document.createElement("div");
+    const identityLabel = document.createElement("span");
+    identityLabel.textContent = "Trabajador";
+    const workerName = document.createElement("h3");
+    workerName.textContent = worker.name;
+    identity.append(identityLabel, workerName);
+    const workerTotal = worker.rows.reduce((total, row) => total + (Number(row.generated_amount) || 0), 0);
+    const totalText = document.createElement("p");
+    totalText.append("Generado: ");
+    const totalStrong = document.createElement("strong");
+    totalStrong.textContent = currencyLabel(workerTotal);
+    totalText.append(totalStrong);
+    heading.append(identity, totalText);
+
+    const scroll = document.createElement("div");
+    scroll.className = "report-table-wrap";
+    const table = document.createElement("table");
+    table.className = "report-table earnings-table";
+    table.innerHTML = "<thead><tr><th>Producto</th><th>Desmoldado</th><th>Tarifa / millar</th><th>Generado</th></tr></thead>";
+    const body = document.createElement("tbody");
+    worker.rows.slice().sort((a, b) => a.product_name.localeCompare(b.product_name, "es")).forEach((row) => {
+      const tr = document.createElement("tr");
+      [row.product_name, numberLabel(row.demolded_quantity), currencyLabel(row.rate_per_thousand), currencyLabel(row.generated_amount)]
+        .forEach((value) => { const td = document.createElement("td"); td.textContent = value; tr.append(td); });
+      body.append(tr);
+    });
+    table.append(body);
+    scroll.append(table);
+    section.append(heading, scroll);
+    dom.earningsResults.append(section);
+  });
+}
+
 async function fetchReport() {
   setMessage(dom.reportMessage);
   if (!dom.reportStart.value || !dom.reportEnd.value) return setMessage(dom.reportMessage, "Selecciona ambas fechas.");
   if (dom.reportStart.value > dom.reportEnd.value) return setMessage(dom.reportMessage, "La fecha inicial no puede ser posterior a la fecha final.");
   setBusy(dom.reportApply, true, "Consultando…");
   try {
-    const { data, error } = await supabase.rpc("operational_worker_report", {
-      p_start_date: dom.reportStart.value,
-      p_end_date: dom.reportEnd.value,
-    });
-    if (error) throw error;
-    state.reportRows = data || [];
+    const params = { p_start_date: dom.reportStart.value, p_end_date: dom.reportEnd.value };
+    const [reportResponse, earningsResponse] = await Promise.all([
+      supabase.rpc("operational_worker_report", params),
+      state.profile.role === "administrator"
+        ? supabase.rpc("admin_demolding_earnings", params)
+        : Promise.resolve({ data: [], error: null }),
+    ]);
+    if (reportResponse.error) throw reportResponse.error;
+    if (earningsResponse.error) throw earningsResponse.error;
+    state.reportRows = reportResponse.data || [];
+    state.earningsRows = earningsResponse.data || [];
     dom.reportRange.textContent = `Periodo: ${dateLabel(dom.reportStart.value)} al ${dateLabel(dom.reportEnd.value)}`;
     if (state.profile.role === "administrator") reportWorkerOptions();
     renderReport();
+    renderEarnings();
   } catch (error) {
     state.reportRows = [];
+    state.earningsRows = [];
     renderReport();
+    renderEarnings();
     setMessage(dom.reportMessage, errorLabel(error));
   } finally {
     setBusy(dom.reportApply, false, "");
@@ -1194,7 +1295,7 @@ document.querySelector("[data-refresh-orders]").addEventListener("click", () => 
 document.querySelector("[data-refresh-users]").addEventListener("click", () => fetchUsers());
 document.querySelector("[data-refresh-report]").addEventListener("click", () => fetchReport());
 dom.reportForm.addEventListener("submit", (event) => { event.preventDefault(); fetchReport(); });
-dom.reportWorker.addEventListener("change", renderReport);
+dom.reportWorker.addEventListener("change", () => { renderReport(); renderEarnings(); });
 dom.reportExcel.addEventListener("click", downloadReportExcel);
 dom.reportPdf.addEventListener("click", () => window.print());
 document.querySelectorAll("[data-report-days]").forEach((button) => button.addEventListener("click", () => {
