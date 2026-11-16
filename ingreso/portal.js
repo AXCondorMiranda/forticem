@@ -54,9 +54,12 @@ const dom = {
   reportApply: document.querySelector("[data-report-apply]"),
   reportSummary: document.querySelector("[data-report-summary]"),
   reportResults: document.querySelector("[data-report-results]"),
-  earningsPanel: document.querySelector("[data-earnings-panel]"),
-  earningsSummary: document.querySelector("[data-earnings-summary]"),
-  earningsResults: document.querySelector("[data-earnings-results]"),
+  productionEarningsPanel: document.querySelector("[data-production-earnings-panel]"),
+  productionEarningsSummary: document.querySelector("[data-production-earnings-summary]"),
+  productionEarningsResults: document.querySelector("[data-production-earnings-results]"),
+  demoldingEarningsPanel: document.querySelector("[data-demolding-earnings-panel]"),
+  demoldingEarningsSummary: document.querySelector("[data-demolding-earnings-summary]"),
+  demoldingEarningsResults: document.querySelector("[data-demolding-earnings-results]"),
   reportExcel: document.querySelector("[data-report-excel]"),
   reportPdf: document.querySelector("[data-report-pdf]"),
   orderDialog: document.querySelector("[data-order-dialog]"),
@@ -78,7 +81,8 @@ const state = {
   orders: [],
   users: [],
   reportRows: [],
-  earningsRows: [],
+  productionEarningsRows: [],
+  demoldingEarningsRows: [],
   ordersShowAll: false,
   selectedOrderId: null,
   ordersChannel: null,
@@ -179,7 +183,8 @@ function showLogin(message = "") {
   state.orders = [];
   state.users = [];
   state.reportRows = [];
-  state.earningsRows = [];
+  state.productionEarningsRows = [];
+  state.demoldingEarningsRows = [];
   if (dom.orderDialog.open) dom.orderDialog.close();
   if (dom.passwordDialog.open) dom.passwordDialog.close();
   dom.authView.hidden = false;
@@ -293,9 +298,9 @@ function filteredReportRows() {
   return workerId ? state.reportRows.filter((row) => row.worker_id === workerId) : state.reportRows;
 }
 
-function filteredEarningsRows() {
+function filteredEarningsRows(rows) {
   const workerId = dom.reportWorker.value;
-  return workerId ? state.earningsRows.filter((row) => row.worker_id === workerId) : state.earningsRows;
+  return workerId ? rows.filter((row) => row.worker_id === workerId) : rows;
 }
 
 function reportWorkerOptions() {
@@ -385,29 +390,29 @@ function renderReport() {
   });
 }
 
-function renderEarnings() {
+function renderEarnings({ panel, summary, results, rows: sourceRows, quantityKey, quantityLabel, emptyLabel }) {
   const isAdministrator = state.profile?.role === "administrator";
-  dom.earningsPanel.hidden = !isAdministrator;
-  dom.earningsSummary.replaceChildren();
-  dom.earningsResults.replaceChildren();
+  panel.hidden = !isAdministrator;
+  summary.replaceChildren();
+  results.replaceChildren();
   if (!isAdministrator) return;
 
-  const rows = filteredEarningsRows();
+  const rows = filteredEarningsRows(sourceRows);
   if (!rows.length) {
     const empty = document.createElement("p");
     empty.className = "records-empty";
-    empty.textContent = "No hay desmolde con tarifa configurada dentro de las fechas seleccionadas.";
-    dom.earningsResults.append(empty);
+    empty.textContent = emptyLabel;
+    results.append(empty);
     return;
   }
 
   const totalGenerated = rows.reduce((total, row) => total + (Number(row.generated_amount) || 0), 0);
-  const totalDemolded = rows.reduce((total, row) => total + (Number(row.demolded_quantity) || 0), 0);
+  const totalQuantity = rows.reduce((total, row) => total + (Number(row[quantityKey]) || 0), 0);
   const workers = new Set(rows.map((row) => row.worker_id)).size;
   const measures = new Set(rows.map((row) => row.product_id)).size;
   [
     ["Total generado", currencyLabel(totalGenerated)],
-    ["Unidades desmoldadas", numberLabel(totalDemolded)],
+    [`Unidades ${quantityLabel.toLowerCase()}`, numberLabel(totalQuantity)],
     ["Trabajadores", numberLabel(workers)],
     ["Medidas con tarifa", numberLabel(measures)],
   ].forEach(([label, value]) => {
@@ -417,7 +422,7 @@ function renderEarnings() {
     const amount = document.createElement("strong");
     amount.textContent = value;
     card.append(caption, amount);
-    dom.earningsSummary.append(card);
+    summary.append(card);
   });
 
   const grouped = new Map();
@@ -449,18 +454,39 @@ function renderEarnings() {
     scroll.className = "report-table-wrap";
     const table = document.createElement("table");
     table.className = "report-table earnings-table";
-    table.innerHTML = "<thead><tr><th>Producto</th><th>Desmoldado</th><th>Tarifa / millar</th><th>Generado</th></tr></thead>";
+    table.innerHTML = `<thead><tr><th>Producto</th><th>${quantityLabel}</th><th>Tarifa / millar</th><th>Generado</th></tr></thead>`;
     const body = document.createElement("tbody");
     worker.rows.slice().sort((a, b) => a.product_name.localeCompare(b.product_name, "es")).forEach((row) => {
       const tr = document.createElement("tr");
-      [row.product_name, numberLabel(row.demolded_quantity), currencyLabel(row.rate_per_thousand), currencyLabel(row.generated_amount)]
+      [row.product_name, numberLabel(row[quantityKey]), currencyLabel(row.rate_per_thousand), currencyLabel(row.generated_amount)]
         .forEach((value) => { const td = document.createElement("td"); td.textContent = value; tr.append(td); });
       body.append(tr);
     });
     table.append(body);
     scroll.append(table);
     section.append(heading, scroll);
-    dom.earningsResults.append(section);
+    results.append(section);
+  });
+}
+
+function renderAdminEarnings() {
+  renderEarnings({
+    panel: dom.productionEarningsPanel,
+    summary: dom.productionEarningsSummary,
+    results: dom.productionEarningsResults,
+    rows: state.productionEarningsRows,
+    quantityKey: "produced_quantity",
+    quantityLabel: "Producido",
+    emptyLabel: "No hay producción con tarifa configurada dentro de las fechas seleccionadas.",
+  });
+  renderEarnings({
+    panel: dom.demoldingEarningsPanel,
+    summary: dom.demoldingEarningsSummary,
+    results: dom.demoldingEarningsResults,
+    rows: state.demoldingEarningsRows,
+    quantityKey: "demolded_quantity",
+    quantityLabel: "Desmoldado",
+    emptyLabel: "No hay desmolde con tarifa configurada dentro de las fechas seleccionadas.",
   });
 }
 
@@ -471,25 +497,31 @@ async function fetchReport() {
   setBusy(dom.reportApply, true, "Consultando…");
   try {
     const params = { p_start_date: dom.reportStart.value, p_end_date: dom.reportEnd.value };
-    const [reportResponse, earningsResponse] = await Promise.all([
+    const [reportResponse, productionEarningsResponse, demoldingEarningsResponse] = await Promise.all([
       supabase.rpc("operational_worker_report", params),
+      state.profile.role === "administrator"
+        ? supabase.rpc("admin_production_earnings", params)
+        : Promise.resolve({ data: [], error: null }),
       state.profile.role === "administrator"
         ? supabase.rpc("admin_demolding_earnings", params)
         : Promise.resolve({ data: [], error: null }),
     ]);
     if (reportResponse.error) throw reportResponse.error;
-    if (earningsResponse.error) throw earningsResponse.error;
+    if (productionEarningsResponse.error) throw productionEarningsResponse.error;
+    if (demoldingEarningsResponse.error) throw demoldingEarningsResponse.error;
     state.reportRows = reportResponse.data || [];
-    state.earningsRows = earningsResponse.data || [];
+    state.productionEarningsRows = productionEarningsResponse.data || [];
+    state.demoldingEarningsRows = demoldingEarningsResponse.data || [];
     dom.reportRange.textContent = `Periodo: ${dateLabel(dom.reportStart.value)} al ${dateLabel(dom.reportEnd.value)}`;
     if (state.profile.role === "administrator") reportWorkerOptions();
     renderReport();
-    renderEarnings();
+    renderAdminEarnings();
   } catch (error) {
     state.reportRows = [];
-    state.earningsRows = [];
+    state.productionEarningsRows = [];
+    state.demoldingEarningsRows = [];
     renderReport();
-    renderEarnings();
+    renderAdminEarnings();
     setMessage(dom.reportMessage, errorLabel(error));
   } finally {
     setBusy(dom.reportApply, false, "");
@@ -1295,7 +1327,7 @@ document.querySelector("[data-refresh-orders]").addEventListener("click", () => 
 document.querySelector("[data-refresh-users]").addEventListener("click", () => fetchUsers());
 document.querySelector("[data-refresh-report]").addEventListener("click", () => fetchReport());
 dom.reportForm.addEventListener("submit", (event) => { event.preventDefault(); fetchReport(); });
-dom.reportWorker.addEventListener("change", () => { renderReport(); renderEarnings(); });
+dom.reportWorker.addEventListener("change", () => { renderReport(); renderAdminEarnings(); });
 dom.reportExcel.addEventListener("click", downloadReportExcel);
 dom.reportPdf.addEventListener("click", () => window.print());
 document.querySelectorAll("[data-report-days]").forEach((button) => button.addEventListener("click", () => {

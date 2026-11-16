@@ -11,8 +11,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="portal.css?v=20261021-3" />
-    <script type="module" src="portal.js?v=20261021-3"></script>
+    <link rel="stylesheet" href="portal.css?v=20261116-1" />
+    <script type="module" src="portal.js?v=20261116-1"></script>
   </head>
   <body>
     <header class="portal-header">
@@ -192,13 +192,21 @@
               <button class="secondary-button" type="button" data-report-pdf disabled>Guardar PDF</button>
             </div>
             <div class="report-summary" data-report-summary></div>
-            <section class="earnings-panel" data-earnings-panel hidden>
+            <section class="earnings-panel" data-production-earnings-panel hidden>
+              <header>
+                <div><span>Solo administración</span><h3>Métricas de producción</h3></div>
+                <p>Valor generado según unidades producidas y tarifa por millar.</p>
+              </header>
+              <div class="report-summary earnings-summary" data-production-earnings-summary></div>
+              <div class="earnings-results" data-production-earnings-results></div>
+            </section>
+            <section class="earnings-panel" data-demolding-earnings-panel hidden>
               <header>
                 <div><span>Solo administración</span><h3>Métricas de desmolde</h3></div>
                 <p>Valor generado según unidades desmoldadas y tarifa por millar.</p>
               </header>
-              <div class="report-summary earnings-summary" data-earnings-summary></div>
-              <div class="earnings-results" data-earnings-results></div>
+              <div class="report-summary earnings-summary" data-demolding-earnings-summary></div>
+              <div class="earnings-results" data-demolding-earnings-results></div>
             </section>
             <div class="report-results" data-report-results></div>
           </section>

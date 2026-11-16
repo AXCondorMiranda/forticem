@@ -297,6 +297,9 @@ input::placeholder, textarea::placeholder { color: #9aa3a8; }
 .report-summary strong { display: block; margin-top: .45rem; font-size: 1.35rem; }
 .report-results { display: grid; gap: 2rem; }
 .earnings-panel { margin: 0 0 2.5rem; padding: 1.25rem; border: 1px solid rgb(11 23 37 / 18%); background: #e8f8f4; }
+.earnings-panel[data-production-earnings-panel] { background: #edf3f9; }
+.earnings-panel[data-production-earnings-panel] > header { border-bottom-color: #9eb2c8; }
+.earnings-panel[data-production-earnings-panel] > header span { color: #315d86; }
 .earnings-panel > header { display: flex; align-items: end; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; padding-bottom: .9rem; border-bottom: 1px solid #8dbbb3; }
 .earnings-panel > header span { color: #087d6d; font: 600 .6rem "DM Mono", monospace; text-transform: uppercase; }
 .earnings-panel > header h3 { margin: .3rem 0 0; font-size: 1.65rem; letter-spacing: -.035em; }
