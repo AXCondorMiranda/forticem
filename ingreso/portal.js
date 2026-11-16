@@ -429,7 +429,35 @@ async function fetchBalances() {
   renderProducts("demolding");
 }
 
-function renderRecords(target, rows, dateField) {
+async function deleteOperationalRecord(kind, row, button) {
+  const isProduction = kind === "production";
+  const label = isProduction ? "producción" : "desmolde";
+  const stockNotice = isProduction
+    ? "Si esta producción ya fue utilizada para desmolde, el sistema impedirá eliminarla."
+    : "El stock generado por este desmolde se descontará automáticamente.";
+  if (!window.confirm(
+    `¿Eliminar el registro de ${label} de ${row.product_name} por ${numberLabel(row.quantity)} ${row.unit}?\n\n` +
+    `${stockNotice}\n\nEsta acción no se puede deshacer.`,
+  )) return;
+
+  button.disabled = true;
+  try {
+    const response = await supabase.rpc(
+      isProduction ? "admin_delete_production_record" : "admin_delete_demolding_record",
+      { p_record_id: row.id },
+    );
+    if (response.error) throw response.error;
+    showToast(`Registro de ${label} eliminado correctamente.`);
+    if (!isProduction) await fetchBalances();
+    await loadRecords(kind);
+    if (isProduction && canUseDemolding()) await fetchBalances();
+  } catch (error) {
+    showToast(errorLabel(error), true);
+    button.disabled = false;
+  }
+}
+
+function renderRecords(target, rows, dateField, kind) {
   target.replaceChildren();
   if (!rows.length) {
     const empty = document.createElement("p");
@@ -450,9 +478,22 @@ function renderRecords(target, rows, dateField) {
     const extras = [time, row.batch_code ? `Lote ${row.batch_code}` : "", row.is_override ? "Excepción administrativa" : ""].filter(Boolean);
     detail.textContent = extras.join(" · ") || "Registro guardado";
     copy.append(name, detail);
+    const actions = document.createElement("div");
+    actions.className = "record-row__actions";
     const quantity = document.createElement("span");
+    quantity.className = "record-row__quantity";
     quantity.textContent = `${numberLabel(row.quantity)} ${row.unit}`;
-    item.append(copy, quantity);
+    actions.append(quantity);
+    if (state.profile?.role === "administrator") {
+      const remove = document.createElement("button");
+      remove.type = "button";
+      remove.className = "record-delete";
+      remove.textContent = "Eliminar";
+      remove.setAttribute("aria-label", `Eliminar registro de ${row.product_name}`);
+      remove.addEventListener("click", () => deleteOperationalRecord(kind, row, remove));
+      actions.append(remove);
+    }
+    item.append(copy, actions);
     target.append(item);
   });
 }
@@ -481,7 +522,7 @@ async function loadRecords(kind) {
     target.append(message);
     return;
   }
-  renderRecords(target, data || [], dateField);
+  renderRecords(target, data || [], dateField, kind);
 }
 
 function relationObject(value) {

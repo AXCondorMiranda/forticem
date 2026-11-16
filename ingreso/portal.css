@@ -181,7 +181,11 @@ input::placeholder, textarea::placeholder { color: #9aa3a8; }
 .record-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 1rem; padding: 1rem 0; border-bottom: 1px solid var(--line); }
 .record-row strong { display: block; font-size: .82rem; }
 .record-row small { display: block; margin-top: .25rem; color: var(--muted); font-size: .68rem; }
-.record-row > span { align-self: center; color: #087d6d; font: 500 .82rem "DM Mono", monospace; }
+.record-row__actions { display: flex; align-items: center; justify-content: flex-end; gap: .75rem; }
+.record-row__quantity { color: #087d6d; font: 500 .82rem "DM Mono", monospace; white-space: nowrap; }
+.record-delete { min-height: 2rem; padding: .35rem .55rem; border: 1px solid rgb(166 47 47 / 35%); color: var(--danger); background: #fff1ef; font: 700 .58rem "DM Mono", monospace; text-transform: uppercase; }
+.record-delete:hover, .record-delete:focus-visible { color: var(--white); background: var(--danger); }
+.record-delete:disabled { cursor: wait; opacity: .5; }
 .records-empty { padding: 2rem 0; color: var(--muted); font-size: .78rem; }
 .loading-line { height: 1px; background: linear-gradient(90deg, transparent, #0bad96, transparent); background-size: 200% 100%; animation: load 1.1s linear infinite; }
 .empty-permissions { max-width: 46rem; margin: clamp(2rem, 8vh, 7rem) auto; }
