@@ -11,8 +11,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="portal.css?v=20261116-1" />
-    <script type="module" src="portal.js?v=20261116-1"></script>
+    <link rel="stylesheet" href="portal.css?v=20261120-1" />
+    <script type="module" src="portal.js?v=20261120-1"></script>
   </head>
   <body>
     <header class="portal-header">
@@ -73,14 +73,17 @@
             <button type="button" data-tab="demolding">
               <span>02</span><strong>Desmolde</strong><i aria-hidden="true">→</i>
             </button>
+            <button type="button" data-tab="stock">
+              <span>03</span><strong>Stock</strong><i aria-hidden="true">→</i>
+            </button>
             <button type="button" data-tab="dispatch">
-              <span>03</span><strong>Despacho</strong><i aria-hidden="true">→</i>
+              <span>04</span><strong>Despacho</strong><i aria-hidden="true">→</i>
             </button>
             <button type="button" data-tab="users">
-              <span>04</span><strong>Usuarios</strong><i aria-hidden="true">→</i>
+              <span>05</span><strong>Usuarios</strong><i aria-hidden="true">→</i>
             </button>
             <button type="button" data-tab="reports">
-              <span>05</span><strong>Reportes</strong><i aria-hidden="true">→</i>
+              <span>06</span><strong>Reportes</strong><i aria-hidden="true">→</i>
             </button>
           </nav>
 
@@ -131,6 +134,17 @@
               <header><div><span>Movimientos del día</span><h3 id="demolding-records-title">Desmolde registrado</h3></div><button type="button" data-refresh-demolding aria-label="Actualizar desmolde">Actualizar</button></header>
               <div data-demolding-records></div>
             </section>
+          </section>
+
+          <section class="operation-panel stock-panel" data-panel="stock" hidden>
+            <header class="operation-heading stock-heading">
+              <div><span>Inventario terminado</span><h2>Stock</h2></div>
+              <button class="refresh-button" type="button" data-refresh-stock>Actualizar</button>
+            </header>
+            <p class="stock-note">Existencia real disponible después de desmolde, ajustes y pedidos.</p>
+            <p class="form-message" data-stock-message role="alert" hidden></p>
+            <div class="stock-summary" data-stock-summary></div>
+            <div class="stock-grid" data-stock-list></div>
           </section>
 
           <section class="operation-panel dispatch-panel" data-panel="dispatch" hidden>
@@ -213,7 +227,7 @@
 
           <section class="empty-permissions" data-no-permissions hidden>
             <span>Sin permisos operativos</span>
-            <h2>Tu cuenta aún no tiene acceso a Producción, Desmolde, Despacho o Administración.</h2>
+            <h2>Tu cuenta aún no tiene acceso a Producción, Desmolde, Stock, Despacho o Administración.</h2>
             <p>Solicita a un administrador que habilite los permisos correspondientes.</p>
           </section>
         </div>

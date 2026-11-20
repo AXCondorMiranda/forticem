@@ -33,6 +33,9 @@ const dom = {
   demoldingSave: document.querySelector("[data-demolding-save]"),
   demoldingRecords: document.querySelector("[data-demolding-records]"),
   overrideField: document.querySelector("[data-override-field]"),
+  stockSummary: document.querySelector("[data-stock-summary]"),
+  stockMessage: document.querySelector("[data-stock-message]"),
+  stockList: document.querySelector("[data-stock-list]"),
   ordersDate: document.querySelector("[data-orders-date]"),
   ordersSearch: document.querySelector("[data-orders-search]"),
   ordersStatus: document.querySelector("[data-orders-status]"),
@@ -78,6 +81,7 @@ const state = {
   profile: null,
   products: [],
   balances: new Map(),
+  stockRows: [],
   orders: [],
   users: [],
   reportRows: [],
@@ -95,6 +99,7 @@ const permission = (name) =>
 
 const canUseProduction = () => permission("view_production") || permission("record_production");
 const canUseDemolding = () => permission("view_demolding") || permission("record_demolding");
+const canUseStock = () => permission("view_stock");
 const canUseDispatch = () => permission("view_orders");
 const canManageUsers = () => permission("manage_users");
 const canUseReports = () => canUseProduction() || canUseDemolding();
@@ -180,6 +185,7 @@ function showLogin(message = "") {
   state.session = null;
   state.profile = null;
   state.products = [];
+  state.stockRows = [];
   state.orders = [];
   state.users = [];
   state.reportRows = [];
@@ -259,15 +265,17 @@ function setActiveTab(tabName) {
 function configureWorkspace() {
   const productionTab = dom.tabs.find((item) => item.dataset.tab === "production");
   const demoldingTab = dom.tabs.find((item) => item.dataset.tab === "demolding");
+  const stockTab = dom.tabs.find((item) => item.dataset.tab === "stock");
   const dispatchTab = dom.tabs.find((item) => item.dataset.tab === "dispatch");
   const usersTab = dom.tabs.find((item) => item.dataset.tab === "users");
   const reportsTab = dom.tabs.find((item) => item.dataset.tab === "reports");
   productionTab.hidden = !canUseProduction();
   demoldingTab.hidden = !canUseDemolding();
+  stockTab.hidden = !canUseStock();
   dispatchTab.hidden = !canUseDispatch();
   usersTab.hidden = !canManageUsers();
   reportsTab.hidden = !canUseReports();
-  dom.noPermissions.hidden = canUseProduction() || canUseDemolding() || canUseDispatch() || canManageUsers() || canUseReports();
+  dom.noPermissions.hidden = canUseProduction() || canUseDemolding() || canUseStock() || canUseDispatch() || canManageUsers() || canUseReports();
   dom.productionSave.hidden = !permission("record_production");
   dom.demoldingSave.hidden = !permission("record_demolding");
   dom.overrideField.hidden = state.profile.role !== "administrator";
@@ -282,13 +290,15 @@ function configureWorkspace() {
       ? "production"
       : canUseDemolding()
         ? "demolding"
-        : canUseDispatch()
-          ? "dispatch"
-          : canManageUsers()
-            ? "users"
-            : canUseReports()
-              ? "reports"
-            : null;
+        : canUseStock()
+          ? "stock"
+          : canUseDispatch()
+            ? "dispatch"
+            : canManageUsers()
+              ? "users"
+              : canUseReports()
+                ? "reports"
+                : null;
   dom.panels.forEach((panel) => { panel.hidden = true; });
   if (initialTab) setActiveTab(initialTab);
 }
@@ -564,6 +574,80 @@ async function fetchBalances() {
   renderProducts("demolding");
 }
 
+function renderStock() {
+  dom.stockSummary.replaceChildren();
+  dom.stockList.replaceChildren();
+  const rows = state.stockRows;
+  if (!rows.length) {
+    const empty = document.createElement("p");
+    empty.className = "records-empty";
+    empty.textContent = "No hay productos activos para mostrar.";
+    dom.stockList.append(empty);
+    return;
+  }
+
+  const totalStock = rows.reduce((total, row) => total + (Number(row.stock_quantity) || 0), 0);
+  const availableProducts = rows.filter((row) => Number(row.stock_quantity) > 0).length;
+  const emptyProducts = rows.filter((row) => Number(row.stock_quantity) === 0).length;
+  const negativeProducts = rows.filter((row) => Number(row.stock_quantity) < 0).length;
+  [
+    ["Stock total", numberLabel(totalStock)],
+    ["Con existencia", numberLabel(availableProducts)],
+    ["Agotados", numberLabel(emptyProducts)],
+    ["Stock negativo", numberLabel(negativeProducts)],
+  ].forEach(([label, value]) => {
+    const card = document.createElement("article");
+    const caption = document.createElement("span");
+    caption.textContent = label;
+    const amount = document.createElement("strong");
+    amount.textContent = value;
+    card.append(caption, amount);
+    dom.stockSummary.append(card);
+  });
+
+  rows
+    .slice()
+    .sort((a, b) => {
+      const aCode = String(a.code || "").trim();
+      const bCode = String(b.code || "").trim();
+      if (aCode && bCode) return Number(aCode) - Number(bCode) || a.name.localeCompare(b.name, "es");
+      if (aCode) return -1;
+      if (bCode) return 1;
+      return a.name.localeCompare(b.name, "es");
+    })
+    .forEach((row) => {
+      const card = document.createElement("article");
+      card.className = "stock-card";
+      if (Number(row.stock_quantity) === 0) card.classList.add("is-empty");
+      if (Number(row.stock_quantity) < 0) card.classList.add("is-negative");
+      const code = document.createElement("span");
+      code.textContent = row.code || "Producto";
+      const name = document.createElement("h3");
+      name.textContent = row.name;
+      const quantity = document.createElement("strong");
+      quantity.textContent = numberLabel(row.stock_quantity);
+      const unit = document.createElement("small");
+      unit.textContent = row.unit;
+      card.append(code, name, quantity, unit);
+      dom.stockList.append(card);
+    });
+}
+
+async function fetchStock() {
+  setMessage(dom.stockMessage);
+  const { data, error } = await supabase
+    .from("products")
+    .select("id, code, name, unit, stock_quantity")
+    .eq("is_active", true)
+    .order("code");
+  if (error) {
+    setMessage(dom.stockMessage, errorLabel(error));
+    throw error;
+  }
+  state.stockRows = data || [];
+  renderStock();
+}
+
 async function deleteOperationalRecord(kind, row, button) {
   const isProduction = kind === "production";
   const label = isProduction ? "producción" : "desmolde";
@@ -586,6 +670,7 @@ async function deleteOperationalRecord(kind, row, button) {
     if (!isProduction) await fetchBalances();
     await loadRecords(kind);
     if (isProduction && canUseDemolding()) await fetchBalances();
+    if (!isProduction && canUseStock()) await fetchStock();
   } catch (error) {
     showToast(errorLabel(error), true);
     button.disabled = false;
@@ -813,6 +898,7 @@ async function deleteOrder(order, button) {
     if (dom.orderDialog.open) dom.orderDialog.close();
     showToast(`${order.order_number} eliminado. El stock fue restaurado.`);
     await fetchOrders();
+    if (canUseStock()) await fetchStock();
   } catch (error) {
     showToast(errorLabel(error), true);
     button.disabled = false;
@@ -1208,6 +1294,7 @@ async function openSession(session) {
     await Promise.all([
       canUseProduction() ? loadRecords("production") : Promise.resolve(),
       canUseDemolding() ? fetchBalances().then(() => loadRecords("demolding")) : Promise.resolve(),
+      canUseStock() ? fetchStock() : Promise.resolve(),
       canUseDispatch() ? fetchOrders() : Promise.resolve(),
       canManageUsers() ? fetchUsers() : Promise.resolve(),
       canUseReports() ? fetchReport() : Promise.resolve(),
@@ -1246,7 +1333,10 @@ dom.logout.addEventListener("click", async () => {
   dom.logout.disabled = false;
 });
 
-dom.tabs.forEach((button) => button.addEventListener("click", () => setActiveTab(button.dataset.tab)));
+dom.tabs.forEach((button) => button.addEventListener("click", () => {
+  setActiveTab(button.dataset.tab);
+  if (button.dataset.tab === "stock") fetchStock().catch(() => {});
+}));
 
 dom.productionForm.addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -1313,7 +1403,7 @@ dom.demoldingForm.addEventListener("submit", async (event) => {
     if (dom.demoldingForm.elements.overrideReason) dom.demoldingForm.elements.overrideReason.value = "";
     setMessage(dom.demoldingMessage, `${entries.length} registro${entries.length === 1 ? "" : "s"} guardado${entries.length === 1 ? "" : "s"}.`, true);
     showToast("Desmolde guardado y stock actualizado.");
-    await Promise.all([fetchBalances(), loadRecords("demolding")]);
+    await Promise.all([fetchBalances(), loadRecords("demolding"), canUseStock() ? fetchStock() : Promise.resolve()]);
   } catch (error) {
     setMessage(dom.demoldingMessage, errorLabel(error));
   } finally {
@@ -1325,6 +1415,7 @@ dom.productionDate.addEventListener("change", () => loadRecords("production"));
 dom.demoldingDate.addEventListener("change", () => loadRecords("demolding"));
 document.querySelector("[data-refresh-production]").addEventListener("click", () => loadRecords("production"));
 document.querySelector("[data-refresh-demolding]").addEventListener("click", async () => { await fetchBalances(); await loadRecords("demolding"); });
+document.querySelector("[data-refresh-stock]").addEventListener("click", () => fetchStock());
 document.querySelector("[data-refresh-orders]").addEventListener("click", () => fetchOrders());
 document.querySelector("[data-refresh-users]").addEventListener("click", () => fetchUsers());
 document.querySelector("[data-refresh-report]").addEventListener("click", () => fetchReport());
